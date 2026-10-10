@@ -1,8 +1,9 @@
-# Preparation scaffold. Technical pages stay draft until authoring and review.
+# Reading-only course. YAML assessments are registered separately in assessments/index.yaml.
 training:
   id: ATS045
   title: 'KCSA: Platform Security'
-  description: Preparation scaffold for Platform Security. Lessons and environments are planned.
+  description: Concept lessons, diagrams and original scenario assessments covering every published objective
+    in this KCSA domain. No labs or playgrounds.
   certification:
     name: Kubernetes and Cloud Native Security Associate
     code: KCSA
@@ -20,7 +21,7 @@ training:
 modules:
 - id: module-intro
   title: Introduction
-  description: Planned introduction and authoring status.
+  description: Audience, learning approach, reading requirements and contribution process.
   content:
   - type: reading
     title: Introduction
@@ -36,71 +37,129 @@ modules:
     path: sections/intro/course-03-how-this-course-is-made.md
 - id: module-010
   title: Supply Chain Security
-  description: Planned coverage of this curriculum objective.
+  description: Concept lessons and scenario reasoning for Supply Chain Security.
+  draft: true
   content:
   - type: reading
-    title: Section Overview
+    title: 'Supply Chain Security: Introduction'
     path: sections/section-010/README.md
   - type: reading
-    title: Supply Chain Security
+    title: Supply Chain Trust And Verification
     path: sections/section-010/module-01/course.md
+  - type: reading
+    title: Artifact Evidence And Sensitive Build Inputs
+    path: sections/section-010/module-01/course-01-artifact-evidence-and-sensitive-build-inputs.md
+  - type: reading
+    title: Connecting Verification To Execution Policy
+    path: sections/section-010/module-01/course-02-connecting-verification-to-execution-policy.md
+  - type: reading
+    title: Summary
+    path: sections/section-010/module-01/course-03-summary.md
 - id: module-020
   title: Image Repository
-  description: Planned coverage of this curriculum objective.
+  description: Concept lessons and scenario reasoning for Image Repository.
+  draft: true
   content:
   - type: reading
-    title: Section Overview
+    title: 'Image Repository: Introduction'
     path: sections/section-020/README.md
   - type: reading
-    title: Image Repository
+    title: Repository Access And Artifact Retention
     path: sections/section-020/module-01/course.md
+  - type: reading
+    title: Image References And Stored Layers
+    path: sections/section-020/module-01/course-01-image-references-and-stored-layers.md
+  - type: reading
+    title: Protecting Publishers, Readers And Repository State
+    path: sections/section-020/module-01/course-02-protecting-publishers-readers-and-repository-state.md
+  - type: reading
+    title: Summary
+    path: sections/section-020/module-01/course-03-summary.md
 - id: module-030
   title: Observability
-  description: Planned coverage of this curriculum objective.
+  description: Concept lessons and scenario reasoning for Observability.
+  draft: true
   content:
   - type: reading
-    title: Section Overview
+    title: 'Observability: Introduction'
     path: sections/section-030/README.md
   - type: reading
-    title: Observability
+    title: Security Observability And Evidence Quality
     path: sections/section-030/module-01/course.md
+  - type: reading
+    title: Collection, Storage And Observation Limits
+    path: sections/section-030/module-01/course-01-collection-storage-and-observation-limits.md
+  - type: reading
+    title: Security Signals Across Different Boundaries
+    path: sections/section-030/module-01/course-02-security-signals-across-different-boundaries.md
+  - type: reading
+    title: Summary
+    path: sections/section-030/module-01/course-03-summary.md
 - id: module-040
   title: Service Mesh
-  description: Planned coverage of this curriculum objective.
+  description: Concept lessons and scenario reasoning for Service Mesh.
+  draft: true
   content:
   - type: reading
-    title: Section Overview
+    title: 'Service Mesh: Introduction'
     path: sections/section-040/README.md
   - type: reading
-    title: Service Mesh
+    title: Service Mesh Identity And Policy
     path: sections/section-040/module-01/course.md
+  - type: reading
+    title: Transport Protection And Mesh Limits
+    path: sections/section-040/module-01/course-01-transport-protection-and-mesh-limits.md
+  - type: reading
+    title: Summary
+    path: sections/section-040/module-01/course-02-summary.md
 - id: module-050
   title: PKI
-  description: Planned coverage of this curriculum objective.
+  description: Concept lessons and scenario reasoning for PKI.
+  draft: true
   content:
   - type: reading
-    title: Section Overview
+    title: 'PKI: Introduction'
     path: sections/section-050/README.md
   - type: reading
-    title: PKI
+    title: Certificates And Public Key Infrastructure
     path: sections/section-050/module-01/course.md
+  - type: reading
+    title: PKI Trust And Certificate Verification
+    path: sections/section-050/module-01/course-01-pki-trust-and-certificate-verification.md
+  - type: reading
+    title: Summary
+    path: sections/section-050/module-01/course-02-summary.md
 - id: module-060
   title: Connectivity
-  description: Planned coverage of this curriculum objective.
+  description: Concept lessons and scenario reasoning for Connectivity.
+  draft: true
   content:
   - type: reading
-    title: Section Overview
+    title: 'Connectivity: Introduction'
     path: sections/section-060/README.md
   - type: reading
-    title: Connectivity
+    title: Connectivity And Protected Network Paths
     path: sections/section-060/module-01/course.md
+  - type: reading
+    title: Designing Allowed Paths Without Implicit Trust
+    path: sections/section-060/module-01/course-01-designing-allowed-paths-without-implicit-trust.md
+  - type: reading
+    title: Summary
+    path: sections/section-060/module-01/course-02-summary.md
 - id: module-070
   title: Admission Control
-  description: Planned coverage of this curriculum objective.
+  description: Concept lessons and scenario reasoning for Admission Control.
+  draft: true
   content:
   - type: reading
-    title: Section Overview
+    title: 'Admission Control: Introduction'
     path: sections/section-070/README.md
   - type: reading
-    title: Admission Control
+    title: Admission Policy And Extension Trust
     path: sections/section-070/module-01/course.md
+  - type: reading
+    title: Admission As A Controlled Resource Decision
+    path: sections/section-070/module-01/course-01-admission-as-a-controlled-resource-decision.md
+  - type: reading
+    title: Summary
+    path: sections/section-070/module-01/course-02-summary.md

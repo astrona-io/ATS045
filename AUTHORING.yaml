@@ -1,0 +1,155 @@
+version: 1
+approval: KCSA-LESSON-PLAN.md approved; reading-only correction 2026-10-11
+course:
+  id: ATS045
+  certification:
+    name: Kubernetes and Cloud Native Security Associate
+    code: KCSA
+    provider: CNCF / Linux Foundation
+    domain: Platform Security
+    weight: 16
+    competencies:
+    - Supply Chain Security
+    - Image Repository
+    - Observability
+    - Service Mesh
+    - PKI
+    - Connectivity
+    - Admission Control
+defaults:
+  playground: false
+  module_lab: false
+  capstone: false
+  section_quiz: false
+  final_quiz: true
+sections:
+- id: section-010
+  title: Supply Chain Security
+  curriculum_item: Supply Chain Security
+  modules:
+  - id: module-01
+    title: Supply Chain Trust And Verification
+    objectives:
+    - Trace source, build, publication and deployment trust boundaries.
+    - Distinguish provenance, signatures, inventories and vulnerability findings.
+    - Relate admission decisions to exact artifact identity.
+    - Explain continued maintenance after an artifact is approved.
+    outline:
+    - Artifact Evidence And Sensitive Build Inputs
+    - Connecting Verification To Execution Policy
+    playground: false
+    module_lab: false
+    diagrams: []
+  capstone: false
+  section_quiz: false
+- id: section-020
+  title: Image Repository
+  curriculum_item: Image Repository
+  modules:
+  - id: module-01
+    title: Repository Access And Artifact Retention
+    objectives:
+    - Distinguish mutable references from content-addressed artifact identity.
+    - Compare repository push, pull and administrative privileges.
+    - Identify sensitive build layers and retained artifact copies.
+    - Relate publication integrity and credential rotation to deployment trust.
+    outline:
+    - Image References And Stored Layers
+    - Protecting Publishers, Readers And Repository State
+    playground: false
+    module_lab: false
+    diagrams: []
+  capstone: false
+  section_quiz: true
+- id: section-030
+  title: Observability
+  curriculum_item: Observability
+  modules:
+  - id: module-01
+    title: Security Observability And Evidence Quality
+    objectives:
+    - Distinguish API audit, runtime and application security observations.
+    - Explain telemetry collection and retention trust boundaries.
+    - Relate alert quality to relevant behaviors and response ownership.
+    - Identify sensitive fields and evidence gaps.
+    outline:
+    - Collection, Storage And Observation Limits
+    - Security Signals Across Different Boundaries
+    playground: false
+    module_lab: false
+    diagrams: []
+  capstone: false
+  section_quiz: false
+- id: section-040
+  title: Service Mesh
+  curriculum_item: Service Mesh
+  modules:
+  - id: module-01
+    title: Service Mesh Identity And Policy
+    objectives:
+    - Distinguish encrypted transport, peer authentication and authorization.
+    - Explain where mesh components implement communication policy.
+    - Relate certificate rotation and hop boundaries to trust.
+    - Identify residual application and retry requirements.
+    outline:
+    - Transport Protection And Mesh Limits
+    playground: false
+    module_lab: false
+    diagrams: []
+  capstone: false
+  section_quiz: false
+- id: section-050
+  title: PKI
+  curriculum_item: PKI
+  modules:
+  - id: module-01
+    title: Certificates And Public Key Infrastructure
+    objectives:
+    - Explain public keys, private keys and certificate authority trust.
+    - Distinguish server authentication from mutual TLS.
+    - Relate identity names, validity and trust chains to verification.
+    - Describe rotation and compromise recovery for certificate-based identities.
+    outline:
+    - PKI Trust And Certificate Verification
+    playground: false
+    module_lab: false
+    diagrams: []
+  capstone: false
+  section_quiz: true
+- id: section-060
+  title: Connectivity
+  curriculum_item: Connectivity
+  modules:
+  - id: module-01
+    title: Connectivity And Protected Network Paths
+    objectives:
+    - Distinguish private reachability from authenticated authority.
+    - Trace ingress, east-west and management connection boundaries.
+    - Relate segmentation and encryption to different protections.
+    - Identify required dependencies and controlled exceptions.
+    outline:
+    - Designing Allowed Paths Without Implicit Trust
+    playground: false
+    module_lab: false
+    diagrams: []
+  capstone: false
+  section_quiz: false
+- id: section-070
+  title: Admission Control
+  curriculum_item: Admission Control
+  modules:
+  - id: module-01
+    title: Admission Policy And Extension Trust
+    objectives:
+    - Distinguish mutation, validation and authorization.
+    - Explain built-in, declarative and webhook admission mechanisms.
+    - Relate failure policy and exemptions to effective enforcement.
+    - Identify extension credentials, transport and availability requirements.
+    outline:
+    - Admission As A Controlled Resource Decision
+    playground: false
+    module_lab: false
+    diagrams: []
+  capstone: false
+  section_quiz: true
+assessment_format: YAML question banks, schema version 1; indexed in assessments/index.yaml

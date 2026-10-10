@@ -1,0 +1,112 @@
+schema_version: 1
+kind: question_bank
+id: ats045-section-050
+course_id: ATS045
+exam_code: KCSA
+status: draft
+provenance: Original practice material; not official examination questions.
+scope:
+  type: section
+  id: section-050
+  title: 'Checkpoint: PKI'
+placement:
+  position: after
+  reading: sections/section-050/module-01/course-02-summary.md
+questions:
+- id: ats045-section-050-q01
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Distinguish API audit, runtime and application security observations.
+  source_readings:
+  - sections/section-030/module-01/course-02-security-signals-across-different-boundaries.md
+  prompt: API audit records show resource creation, but the question concerns later file access in a container.
+    What additional evidence is relevant?
+  options:
+  - id: a
+    text: Only rereading the resource creation response.
+    explanation: That remains evidence for the earlier API boundary.
+  - id: b
+    text: Assume every accepted Pod performed every possible file action.
+    explanation: Acceptance does not establish later behavior.
+  - id: c
+    text: Appropriate runtime or application observations.
+    explanation: The API source does not record every execution action.
+  correct_option: c
+  explanation: The API source does not record every execution action.
+- id: ats045-section-050-q02
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Relate alert quality to relevant behaviors and response ownership.
+  source_readings:
+  - sections/section-030/module-01/course-02-security-signals-across-different-boundaries.md
+  prompt: A runtime detector reports a suspicious action. Does that prove the action was prevented?
+  options:
+  - id: a
+    text: No security evidence can ever be useful.
+    explanation: Detection can still support scope and response.
+  - id: b
+    text: No; detection and enforcement have different effects.
+    explanation: Actual operating mode determines whether any blocking occurred.
+  - id: c
+    text: Yes; every alert is a rejection.
+    explanation: An observation can occur after execution.
+  correct_option: b
+  explanation: Actual operating mode determines whether any blocking occurred.
+- id: ats045-section-050-q03
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Distinguish encrypted transport, peer authentication and authorization.
+  source_readings:
+  - sections/section-040/module-01/course-01-transport-protection-and-mesh-limits.md
+  prompt: Mutual TLS verifies service peers. Which decision remains separate?
+  options:
+  - id: a
+    text: Permission for the requested application or user operation.
+    explanation: Authenticated identity does not authorize every action.
+  - id: b
+    text: Whether there are any peer identities.
+    explanation: Mutual TLS supplies defined identity evidence.
+  - id: c
+    text: Whether encryption can protect a configured hop.
+    explanation: It can, subject to the actual TLS contract.
+  correct_option: a
+  explanation: Authenticated identity does not authorize every action.
+- id: ats045-section-050-q04
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Explain public keys, private keys and certificate authority trust.
+  source_readings:
+  - sections/section-050/module-01/course-01-pki-trust-and-certificate-verification.md
+  prompt: A private key is copied to another actor. Why is this serious?
+  options:
+  - id: a
+    text: The public certificate must instantly disappear everywhere.
+    explanation: Disclosure does not automatically remove accepted credentials.
+  - id: b
+    text: The copied key only provides a Pod label.
+    explanation: Cryptographic possession is not metadata selection.
+  - id: c
+    text: The actor may prove possession for the accepted certificate identity.
+    explanation: The key is the protected identity capability.
+  correct_option: c
+  explanation: The key is the protected identity capability.
+- id: ats045-section-050-q05
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Relate identity names, validity and trust chains to verification.
+  source_readings:
+  - sections/section-050/module-01/course-01-pki-trust-and-certificate-verification.md
+  prompt: A certificate has a trusted chain but does not match the intended server name. What should a
+    client do?
+  options:
+  - id: a
+    text: Accept it because any signature proves the right hostname.
+    explanation: Identity matching is a separate verification requirement.
+  - id: b
+    text: Reject that identity mismatch and investigate the target and certificate.
+    explanation: Trusted issuance does not make a certificate valid for every endpoint.
+  - id: c
+    text: Disable all verification permanently.
+    explanation: That weakens protection rather than correcting the mismatch.
+  correct_option: b
+  explanation: Trusted issuance does not make a certificate valid for every endpoint.
