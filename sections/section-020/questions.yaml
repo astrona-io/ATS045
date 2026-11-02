@@ -1,0 +1,113 @@
+schema_version: 1
+kind: question_bank
+id: ats045-section-020
+course_id: ATS045
+exam_code: KCSA
+status: draft
+provenance: Original practice material; not official examination questions.
+scope:
+  type: section
+  id: section-020
+  title: 'Checkpoint: Image Repository'
+placement:
+  position: after
+  reading: sections/section-020/module-01/course-03-summary.md
+questions:
+- id: ats045-section-020-q01
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Trace source, build, publication and deployment trust boundaries.
+  source_readings:
+  - sections/section-010/module-01/course-02-connecting-verification-to-execution-policy.md
+  prompt: A build process can publish images and administer production clusters. Which separation reduces
+    compromise impact?
+  options:
+  - id: a
+    text: One permanent administrator token for every stage.
+    explanation: That combines trust boundaries and broadens exposure.
+  - id: b
+    text: Only changing the registry hostname spelling.
+    explanation: Naming does not alter permissions.
+  - id: c
+    text: Distinct scoped build and delivery identities.
+    explanation: The stages need different authority and should not unnecessarily share it.
+  correct_option: c
+  explanation: The stages need different authority and should not unnecessarily share it.
+- id: ats045-section-020-q02
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Distinguish provenance, signatures, inventories and vulnerability findings.
+  source_readings:
+  - sections/section-010/module-01/course-02-connecting-verification-to-execution-policy.md
+  prompt: Provenance describes a build but has no trustworthy link to the selected artifact. What is missing?
+  options:
+  - id: a
+    text: A guarantee that every tag is immutable.
+    explanation: Tags can move unless policy supplies a restriction.
+  - id: b
+    text: Reliable producer trust and exact content association.
+    explanation: Plausible metadata alone does not establish assurance.
+  - id: c
+    text: A requirement that all provenance be application logs.
+    explanation: These records serve different purposes.
+  correct_option: b
+  explanation: Plausible metadata alone does not establish assurance.
+- id: ats045-section-020-q03
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Relate admission decisions to exact artifact identity.
+  source_readings:
+  - sections/section-010/module-01/course-02-connecting-verification-to-execution-policy.md
+  prompt: A verification outage permits all deployments under fail-open policy. What changed during the
+    outage?
+  options:
+  - id: a
+    text: Requests can proceed without that check, trading enforcement for availability.
+    explanation: The configured failure behavior determines the effective decision.
+  - id: b
+    text: Every request is necessarily rejected.
+    explanation: That describes a fail-closed result instead.
+  - id: c
+    text: All images automatically become vulnerability-free.
+    explanation: Outage behavior does not change artifact contents.
+  correct_option: a
+  explanation: The configured failure behavior determines the effective decision.
+- id: ats045-section-020-q04
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Compare repository push, pull and administrative privileges.
+  source_readings:
+  - sections/section-020/module-01/course-02-protecting-publishers-readers-and-repository-state.md
+  prompt: A worker only retrieves images but uses a credential that can push and delete artifacts. What
+    is excessive?
+  options:
+  - id: a
+    text: Permission to use any image reference at all.
+    explanation: Retrieval is a legitimate requirement; broader authority is the issue.
+  - id: b
+    text: A namespace-local name.
+    explanation: Naming does not define registry rights.
+  - id: c
+    text: Publication and cleanup authority beyond its retrieval need.
+    explanation: Repository operations should be scoped to the consumer role.
+  correct_option: c
+  explanation: Repository operations should be scoped to the consumer role.
+- id: ats045-section-020-q05
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Relate publication integrity and credential rotation to deployment trust.
+  source_readings:
+  - sections/section-020/module-01/course-02-protecting-publishers-readers-and-repository-state.md
+  prompt: A publication credential is rotated after misuse. What also needs investigation?
+  options:
+  - id: a
+    text: Nothing because old artifacts disappear automatically.
+    explanation: Rotation does not perform that cleanup or restore running workloads.
+  - id: b
+    text: Published content, tag changes and affected deployments.
+    explanation: New credentials do not remove unwanted existing artifacts or their consumers.
+  - id: c
+    text: Only whether the new token has a shorter name.
+    explanation: Name length does not establish scope or recovery.
+  correct_option: b
+  explanation: New credentials do not remove unwanted existing artifacts or their consumers.
