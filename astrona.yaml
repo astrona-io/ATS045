@@ -38,7 +38,7 @@ modules:
 - id: module-010
   title: Supply Chain Security
   description: Concept lessons and scenario reasoning for Supply Chain Security.
-  draft: true
+  status: alpha
   content:
   - type: reading
     title: 'Supply Chain Security: Introduction'
@@ -58,7 +58,7 @@ modules:
 - id: module-020
   title: Image Repository
   description: Concept lessons and scenario reasoning for Image Repository.
-  draft: true
+  status: alpha
   content:
   - type: reading
     title: 'Image Repository: Introduction'
@@ -78,7 +78,7 @@ modules:
 - id: module-030
   title: Observability
   description: Concept lessons and scenario reasoning for Observability.
-  draft: true
+  status: alpha
   content:
   - type: reading
     title: 'Observability: Introduction'
@@ -98,7 +98,7 @@ modules:
 - id: module-040
   title: Service Mesh
   description: Concept lessons and scenario reasoning for Service Mesh.
-  draft: true
+  status: alpha
   content:
   - type: reading
     title: 'Service Mesh: Introduction'
@@ -115,7 +115,7 @@ modules:
 - id: module-050
   title: PKI
   description: Concept lessons and scenario reasoning for PKI.
-  draft: true
+  status: alpha
   content:
   - type: reading
     title: 'PKI: Introduction'
@@ -132,7 +132,7 @@ modules:
 - id: module-060
   title: Connectivity
   description: Concept lessons and scenario reasoning for Connectivity.
-  draft: true
+  status: alpha
   content:
   - type: reading
     title: 'Connectivity: Introduction'
@@ -149,7 +149,7 @@ modules:
 - id: module-070
   title: Admission Control
   description: Concept lessons and scenario reasoning for Admission Control.
-  draft: true
+  status: alpha
   content:
   - type: reading
     title: 'Admission Control: Introduction'
