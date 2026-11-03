@@ -1,0 +1,69 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Audit Access Changes And Keep The Evidence (LAB). Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-045-capstone-030-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - mccutchen/go-httpbin:2.25.0
+      - curlimages/curl:8.22.0
+
+bootstrap:
+  init:
+    - name: seed-cluster
+      description: Create the Starfleet workloads and the patrol-binder CronJob
+      type: file
+      source: bootstrap/01-seed-cluster.sh
+
+testing:
+  init:
+    - name: apply-solution
+      description: Turn on audit logging with retention and record the RoleBinding create
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: audit-with-retention
+      description: "Audit logging runs and keeps logs for at least 7 days and 3 backups"
+      type: file
+      source: validation/validate-audit-with-retention.sh
+      hint: "Add --audit-log-maxage=7 and --audit-log-maxbackup=3 next to --audit-policy-file and --audit-log-path, with the volumes, then wait for the restart."
+    - name: rbac-bodies-recorded
+      description: "Role and RoleBinding changes are recorded with both bodies"
+      type: file
+      source: validation/validate-rbac-bodies-recorded.sh
+      hint: "Add a rule for the group rbac.authorization.k8s.io with level RequestResponse before the catch-all rule."
+    - name: secret-metadata-only
+      description: "A Secret read is recorded at Metadata, with no bodies"
+      type: file
+      source: validation/validate-secret-metadata-only.sh
+      hint: "Put the Secret rule before any rule that gives a higher level."
+    - name: noise-dropped
+      description: "Health checks and the RequestReceived stage are not recorded"
+      type: file
+      source: validation/validate-noise-dropped.sh
+      hint: "Use omitStages RequestReceived and a level None rule for /healthz*, /livez* and /readyz*."
+    - name: binding-evidence
+      description: "binding-evidence names the caller, audit ID and subject of a real RoleBinding create"
+      type: file
+      source: validation/validate-binding-evidence.sh
+      hint: "Wait for the next patrol-binder run, select the create event for patrol-view with jq, and read user.username, auditID and requestObject.subjects."
+    - name: patrol-binder-intact
+      description: "The CronJob patrol-binder and its RBAC are unchanged"
+      type: file
+      source: validation/validate-patrol-binder-intact.sh
+      hint: "Do not delete, suspend or edit the CronJob or its RoleBinding."
+
+teardown:
+  keepCluster: false

@@ -1,0 +1,242 @@
+# Knowledge check for section 070. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats045-070
+course_id: ATS045
+exam_code: KCSA
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-070
+  title: "Admission Control"
+questions:
+  - id: ats045-070-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Place admission in the request path"
+    source_readings:
+      - sections/section-070/module-01/course-01-the-admission-chain-and-built-in-controllers.md
+    prompt: "In which order do the stages of a request to the API server run?"
+    options:
+      - id: a
+        text: "Authentication, authorization, mutating admission, schema validation, validating admission, storage."
+        explanation: "Correct. Validation sees the object after mutation."
+      - id: b
+        text: "Admission, authentication, authorization, storage."
+        explanation: "Authentication and authorization come first."
+      - id: c
+        text: "Authorization, authentication, validating admission, mutating admission."
+        explanation: "Authentication runs before authorization, and mutation before validation."
+      - id: d
+        text: "Authentication, mutating admission, authorization, storage."
+        explanation: "Authorization runs before admission."
+    correct_option: a
+    explanation: "Correct. Validation sees the object after mutation."
+
+  - id: ats045-070-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Separate authorization from admission"
+    source_readings:
+      - sections/section-070/module-01/course-01-the-admission-chain-and-built-in-controllers.md
+    prompt: "A service account may create Pods in a namespace, and it submits a privileged Pod. Which control can reject it?"
+    options:
+      - id: a
+        text: "RBAC, because the Pod is privileged."
+        explanation: "RBAC checks the verb and the resource, not the contents of the Pod."
+      - id: b
+        text: "Authentication, because the Pod is unusual."
+        explanation: "Authentication identifies the caller only."
+      - id: c
+        text: "Nothing, because the account is allowed."
+        explanation: "Admission can reject an object from an authorized caller."
+      - id: d
+        text: "Admission, such as Pod Security Admission, because it reads the object."
+        explanation: "Correct. Authorization does not read the Pod spec."
+    correct_option: d
+    explanation: "Correct. Authorization does not read the Pod spec."
+
+  - id: ats045-070-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Use a dry run"
+    source_readings:
+      - sections/section-070/module-01/course-01-the-admission-chain-and-built-in-controllers.md
+    prompt: "Which command tells you whether admission would accept an object, without storing it?"
+    options:
+      - id: a
+        text: "`kubectl apply --dry-run=client -f pod.yaml`"
+        explanation: "A client-side dry run never reaches the API server."
+      - id: b
+        text: "`kubectl get -f pod.yaml`"
+        explanation: "A read is not admitted."
+      - id: c
+        text: "`kubectl apply --dry-run=server -f pod.yaml`"
+        explanation: "Correct. It runs every stage except the write to etcd."
+      - id: d
+        text: "`kubectl diff` with no file"
+        explanation: "It needs an object, and it is not the check for a rule."
+    correct_option: c
+    explanation: "Correct. It runs every stage except the write to etcd."
+
+  - id: ats045-070-q04
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Read a Pod Security setup"
+    source_readings:
+      - sections/section-070/module-01/course-02-pod-security-admission-and-validating-admission-policy.md
+    prompt: "Where is the Pod Security level for a workload set?"
+    options:
+      - id: a
+        text: "In the securityContext of every Pod."
+        explanation: "The securityContext holds settings that the level checks, not the level."
+      - id: b
+        text: "In labels on the namespace."
+        explanation: "Correct. One label per mode: enforce, warn and audit."
+      - id: c
+        text: "In the Deployment annotations."
+        explanation: "The level is read from the namespace."
+      - id: d
+        text: "In the kubelet configuration."
+        explanation: "The check runs in the API server."
+    correct_option: b
+    explanation: "Correct. One label per mode: enforce, warn and audit."
+
+  - id: ats045-070-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain a Deployment with no ready Pods"
+    source_readings:
+      - sections/section-070/module-01/course-02-pod-security-admission-and-validating-admission-policy.md
+    prompt: "With `enforce=restricted` on a namespace, a root Deployment is created without an error, and it shows 0 of 1 ready. Why?"
+    options:
+      - id: a
+        text: "Pod Security checks Pods, and the controller's request to create the Pod is the one that is rejected."
+        explanation: "Correct. The Deployment itself is not a Pod. The event shows the violation."
+      - id: b
+        text: "The Deployment is rejected, and the output is old."
+        explanation: "The Deployment is admitted."
+      - id: c
+        text: "The image is missing."
+        explanation: "The cause is an admission rejection."
+      - id: d
+        text: "The label is ignored for Deployments."
+        explanation: "The label applies when the Pod is created."
+    correct_option: a
+    explanation: "Correct. The Deployment itself is not a Pod. The event shows the violation."
+
+  - id: ats045-070-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Choose a binding action"
+    source_readings:
+      - sections/section-070/module-01/course-02-pod-security-admission-and-validating-admission-policy.md
+    prompt: "A ValidatingAdmissionPolicyBinding has `validationActions: [\"Warn\"]`. What does a violating request do?"
+    options:
+      - id: a
+        text: "It is rejected with the message of the rule."
+        explanation: "That is the Deny action."
+      - id: b
+        text: "It is rejected after a delay."
+        explanation: "There is no delayed rejection."
+      - id: c
+        text: "It is admitted and removed later."
+        explanation: "The API server does not remove objects for a violation."
+      - id: d
+        text: "It is admitted and the client gets a warning."
+        explanation: "Correct. Warn does not block."
+    correct_option: d
+    explanation: "Correct. Warn does not block."
+
+  - id: ats045-070-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Find a rule that never runs"
+    source_readings:
+      - sections/section-070/module-01/course-02-pod-security-admission-and-validating-admission-policy.md
+    prompt: "A policy and a binding exist, and a violating Deployment is still admitted. The binding selects namespaces with the label `admission=enforced`, and the namespace has `admission=enforce`. What is the cause?"
+    options:
+      - id: a
+        text: "The CEL expression is wrong."
+        explanation: "The expression is never evaluated when no namespace is selected."
+      - id: b
+        text: "The policy must be created after the binding."
+        explanation: "The order does not matter."
+      - id: c
+        text: "The selector matches no namespace, so the rule never runs."
+        explanation: "Correct. A selector that matches nothing disables the rule with no error."
+      - id: d
+        text: "Deployments are exempt from policies."
+        explanation: "The policy matches Deployments."
+    correct_option: c
+    explanation: "Correct. A selector that matches nothing disables the rule with no error."
+
+  - id: ats045-070-q08
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Judge a failure policy"
+    source_readings:
+      - sections/section-070/module-01/course-03-admission-webhooks-failure-and-exceptions.md
+    prompt: "A validating webhook uses `failurePolicy: Ignore`, and its service is down. What is the effect on matching requests?"
+    options:
+      - id: a
+        text: "They are rejected, so the cluster is safe."
+        explanation: "That is Fail."
+      - id: b
+        text: "They are admitted without the check of that webhook."
+        explanation: "Correct. Ignore keeps the cluster working and drops the rule while the service is down."
+      - id: c
+        text: "They wait until the service returns."
+        explanation: "The call ends at the timeout."
+      - id: d
+        text: "They are sent to another webhook."
+        explanation: "The API server does not fall back to another webhook."
+    correct_option: b
+    explanation: "Correct. Ignore keeps the cluster working and drops the rule while the service is down."
+
+  - id: ats045-070-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Judge the coverage of a webhook"
+    source_readings:
+      - sections/section-070/module-01/course-03-admission-webhooks-failure-and-exceptions.md
+    prompt: "A webhook has an `objectSelector` for the label `scan=required`. Why is that a weak control for a rule that must cover every object?"
+    options:
+      - id: a
+        text: "The author of an object can leave the label out, and the webhook is then not called."
+        explanation: "Correct. A selector decides coverage, and the author sets the label."
+      - id: b
+        text: "Selectors are not supported for validating webhooks."
+        explanation: "They are supported."
+      - id: c
+        text: "The label slows the request."
+        explanation: "Speed is not the issue."
+      - id: d
+        text: "The label is checked by RBAC."
+        explanation: "RBAC does not read the label for admission."
+    correct_option: a
+    explanation: "Correct. A selector decides coverage, and the author sets the label."
+
+  - id: ats045-070-q10
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Bind evidence to content"
+    source_readings:
+      - sections/section-070/module-01/course-03-admission-webhooks-failure-and-exceptions.md
+    prompt: "A validating service approves an image because a signature exists for the tag `1.4`. What can go wrong?"
+    options:
+      - id: a
+        text: "Nothing, because tags are immutable."
+        explanation: "A tag is a name and it can be moved."
+      - id: b
+        text: "The signature expires at once."
+        explanation: "Expiry is a separate matter."
+      - id: c
+        text: "The registry blocks the pull."
+        explanation: "The pull is not the issue."
+      - id: d
+        text: "The tag can later point to different content that the signature did not cover."
+        explanation: "Correct. Bind the check to the digest of the exact image."
+    correct_option: d
+    explanation: "Correct. Bind the check to the digest of the exact image."

@@ -1,0 +1,57 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Read The Cluster CA And Issue A Short-Lived Client Certificate (LAB). Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-045-lab-050-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+
+bootstrap:
+  init:
+    - name: seed-cluster
+      description: Create the Starfleet workload
+      type: file
+      source: bootstrap/01-seed-cluster.sh
+
+testing:
+  init:
+    - name: apply-solution
+      description: Issue the certificate, bind the Role and write the evidence
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: ca-evidence
+      description: "pki-evidence holds the CA fingerprint and the API server expiry date read from the node"
+      type: file
+      source: validation/validate-ca-evidence.sh
+      hint: "Run openssl x509 -noout -fingerprint -sha256 on /etc/kubernetes/pki/ca.crt and -enddate on apiserver.crt inside the node container. Store the value after the equals sign."
+    - name: csr-issued
+      description: "scout-auditor has an approved client certificate that lasts at most one day"
+      type: file
+      source: validation/validate-csr-issued.sh
+      hint: "Use signerName kubernetes.io/kube-apiserver-client, usages client auth, expirationSeconds 86400 and a subject of CN=scout-auditor and O=auditors, then approve the request."
+    - name: auditor-least-privilege
+      description: "scout-auditor can read pods in starfleet and nothing else"
+      type: file
+      source: validation/validate-auditor-least-privilege.sh
+      hint: "Create a Role with get and list on pods in starfleet and a RoleBinding to the user scout-auditor. Do not use a ClusterRoleBinding."
+    - name: no-admin-shortcut
+      description: "scout still runs and scout-auditor is not an admin"
+      type: file
+      source: validation/validate-no-admin-shortcut.sh
+      hint: "Bind only the Role you created. Do not bind cluster-admin or admin."
+
+teardown:
+  keepCluster: false

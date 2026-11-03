@@ -1,44 +1,51 @@
+---
 schema_version: 1
 course_id: ATS045
 status: draft
 banks:
-- id: ats045-section-020
-  path: sections/section-020/questions.yaml
-  question_count: 5
-  placement:
-    position: after
-    reading: sections/section-020/module-01/course-03-summary.md
+- id: ats045-010
+  path: sections/section-010/quiz.yaml
+  question_count: 10
+  covered_sections:
+  - section-010
+- id: ats045-020
+  path: sections/section-020/quiz.yaml
+  question_count: 10
+  covered_sections:
+  - section-020
+- id: ats045-030
+  path: sections/section-030/quiz.yaml
+  question_count: 10
+  covered_sections:
+  - section-030
+- id: ats045-040
+  path: sections/section-040/quiz.yaml
+  question_count: 10
+  covered_sections:
+  - section-040
+- id: ats045-050
+  path: sections/section-050/quiz.yaml
+  question_count: 10
+  covered_sections:
+  - section-050
+- id: ats045-060
+  path: sections/section-060/quiz.yaml
+  question_count: 10
+  covered_sections:
+  - section-060
+- id: ats045-070
+  path: sections/section-070/quiz.yaml
+  question_count: 10
+  covered_sections:
+  - section-070
+- id: ats045-final
+  path: sections/final-domain-quiz.yaml
+  question_count: 14
   covered_sections:
   - section-010
   - section-020
-- id: ats045-section-050
-  path: sections/section-050/questions.yaml
-  question_count: 5
-  placement:
-    position: after
-    reading: sections/section-050/module-01/course-02-summary.md
-  covered_sections:
   - section-030
   - section-040
   - section-050
-- id: ats045-section-070
-  path: sections/section-070/questions.yaml
-  question_count: 5
-  placement:
-    position: after
-    reading: sections/section-070/module-01/course-02-summary.md
-  covered_sections:
   - section-060
-  - section-070
-- id: ats045-domain-review
-  path: assessments/domain-review.yaml
-  question_count: 5
-  placement:
-    position: after
-    reading: sections/section-070/module-01/course-02-summary.md
-  covered_sections:
-  - section-010
-  - section-020
-  - section-030
-  - section-050
   - section-070

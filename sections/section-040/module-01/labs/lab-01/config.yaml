@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Require mTLS And Open One Port (LAB). Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-045-lab-040-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - mccutchen/go-httpbin:2.25.0
+      - curlimages/curl:8.22.0
+      - docker.io/istio/pilot:1.31.1
+      - docker.io/istio/proxyv2:1.31.1
+
+bootstrap:
+  init:
+    - name: seed-cluster
+      description: Install Istio and create the Starfleet workloads
+      type: file
+      source: bootstrap/01-seed-cluster.sh
+
+testing:
+  init:
+    - name: apply-solution
+      description: Apply the PeerAuthentication policies and record the identity
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: strict-mtls-required
+      description: "starfleet refuses plain text and still serves mesh clients"
+      type: file
+      source: validation/validate-strict-mtls-required.sh
+      hint: "Create a PeerAuthentication named default in starfleet, without a selector, with mtls mode STRICT. Do not use PERMISSIVE."
+    - name: metrics-port-only
+      description: "Port 9797 of scout answers plain text and the application port does not"
+      type: file
+      source: validation/validate-metrics-port-only.sh
+      hint: "Add a PeerAuthentication with a selector for app scout, mode STRICT and portLevelMtls 9797 with mode PERMISSIVE. The port is the container port, and portLevelMtls needs a selector."
+    - name: identity-evidence
+      description: "mesh-identities holds the real certificate identity of scout"
+      type: file
+      source: validation/validate-identity-evidence.sh
+      hint: "Read the certificate of the sidecar with curl localhost:15000/certs inside the istio-proxy container and use the URI in subject_alt_names."
+    - name: sidecars-present
+      description: "Every running pod in starfleet has a sidecar"
+      type: file
+      source: validation/validate-sidecars-present.sh
+      hint: "Do not remove injection to make a request work."
+
+teardown:
+  keepCluster: false

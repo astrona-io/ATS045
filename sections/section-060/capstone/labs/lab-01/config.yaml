@@ -1,0 +1,69 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Segment The Starfleet Network (LAB). Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-045-capstone-060
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - mccutchen/go-httpbin:2.25.0
+      - curlimages/curl:8.22.0
+
+bootstrap:
+  init:
+    - name: seed-cluster
+      description: Create the Starfleet workloads
+      type: file
+      source: bootstrap/01-seed-cluster.sh
+
+testing:
+  init:
+    - name: apply-solution
+      description: Apply the NetworkPolicy resources
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: default-deny-both
+      description: "Every pod in starfleet is isolated for ingress and egress"
+      type: file
+      source: validation/validate-default-deny-both.sh
+      hint: "Create one policy with an empty podSelector and policyTypes Ingress and Egress, and no rules. Keep it."
+    - name: east-west-paths
+      description: "shuttle reaches scout and probe by name and nothing else"
+      type: file
+      source: validation/validate-east-west-paths.sh
+      hint: "Allow shuttle egress to scout on 9898 and to probe on 8080, and the matching ingress on scout and probe. Add a DNS egress rule for kube-dns on port 53, or names do not resolve."
+    - name: management-port
+      description: "Only the collector in ops reads the metrics port 9797"
+      type: file
+      source: validation/validate-management-port.sh
+      hint: "Add an ingress rule on scout with a namespaceSelector and a podSelector in the same from item, for ops and app=collector, on TCP 9797."
+    - name: egress-contained
+      description: "shuttle cannot reach beacon in outpost"
+      type: file
+      source: validation/validate-egress-contained.sh
+      hint: "Egress deny with an allow list stops beacon. Do not allow ipBlock 0.0.0.0/0 or a whole namespace."
+    - name: policy-hygiene
+      description: "No policy allows every source or destination"
+      type: file
+      source: validation/validate-policy-hygiene.sh
+      hint: "Do not use an empty from or to, an empty namespaceSelector alone or 0.0.0.0/0."
+    - name: workloads-unchanged
+      description: "The workloads still run and none uses the host network"
+      type: file
+      source: validation/validate-workloads-unchanged.sh
+      hint: "Fix the network with policies only."
+
+teardown:
+  keepCluster: false

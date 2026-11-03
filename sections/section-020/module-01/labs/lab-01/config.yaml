@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Fix ImagePullBackOff With A Pull Secret (LAB). Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-045-lab-020-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - curlimages/curl:8.22.0
+      - registry:2.8.3
+      - httpd:2.4-alpine
+      - quay.io/skopeo/stable:v1.18.0
+
+bootstrap:
+  init:
+    - name: seed-cluster
+      description: Start the private registry, seed one image and create workloads that cannot pull it
+      type: file
+      source: bootstrap/01-seed-cluster.sh
+
+testing:
+  init:
+    - name: apply-solution
+      description: Apply the reference solution
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: pull-secret
+      description: "registry-pull is a dockerconfigjson Secret for localhost:30500 as puller"
+      type: file
+      source: validation/validate-pull-secret.sh
+      hint: "Use kubectl create secret docker-registry registry-pull with --docker-server=localhost:30500, user puller and password pull-pass-7."
+    - name: service-accounts-carry-secret
+      description: "scout and probe ServiceAccounts list the Secret"
+      type: file
+      source: validation/validate-service-accounts-carry-secret.sh
+      hint: "Patch both ServiceAccounts with imagePullSecrets naming registry-pull."
+    - name: deployments-use-service-account
+      description: "The Deployments do not repeat imagePullSecrets"
+      type: file
+      source: validation/validate-deployments-use-service-account.sh
+      hint: "Do not edit the Deployment templates. The ServiceAccount admission controller adds the Secret to new pods."
+    - name: workloads-running
+      description: "scout and probe are available"
+      type: file
+      source: validation/validate-workloads-running.sh
+      hint: "Restart both Deployments with kubectl rollout restart, because existing pods do not get new ServiceAccount pull Secrets."
+    - name: registry-still-private
+      description: "The registry still refuses unauthenticated calls"
+      type: file
+      source: validation/validate-registry-still-private.sh
+      hint: "Fix the credential on the cluster side. Do not change the registry."
+
+teardown:
+  keepCluster: false

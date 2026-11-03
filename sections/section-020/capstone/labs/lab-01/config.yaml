@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Rotate Registry Pull Credentials And Pin Digests (LAB). Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-045-capstone-020
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - curlimages/curl:8.22.0
+      - registry:2.8.3
+      - httpd:2.4-alpine
+      - quay.io/skopeo/stable:v1.18.0
+
+bootstrap:
+  init:
+    - name: seed-cluster
+      description: Start the registry with the new account and create workloads that hold the revoked credential
+      type: file
+      source: bootstrap/01-seed-cluster.sh
+
+testing:
+  init:
+    - name: apply-solution
+      description: Apply the reference solution
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: pull-secrets-rotated
+      description: "Both namespaces hold the puller-v2 credential"
+      type: file
+      source: validation/validate-pull-secrets-rotated.sh
+      hint: "Replace registry-pull in starfleet and in outpost. A Secret belongs to one namespace."
+    - name: old-credential-gone
+      description: "No Secret holds the revoked puller account"
+      type: file
+      source: validation/validate-old-credential-gone.sh
+      hint: "Overwrite the old Secret. Do not leave a copy under another name."
+    - name: images-pinned-to-registry-digest
+      description: "scout and drifter use the digest of tag 6.15.0"
+      type: file
+      source: validation/validate-images-pinned-to-registry-digest.sh
+      hint: "Read Docker-Content-Digest from the registry manifest response and use localhost:30500/starfleet/podinfo@sha256:digest."
+    - name: pull-policy-always
+      description: "Both workloads use imagePullPolicy Always"
+      type: file
+      source: validation/validate-pull-policy-always.sh
+      hint: "Set imagePullPolicy: Always on the container."
+    - name: workloads-running
+      description: "scout and drifter are available"
+      type: file
+      source: validation/validate-workloads-running.sh
+      hint: "Pods that failed with the old credential need a new rollout. Setting the image triggers one."
+    - name: registry-still-private
+      description: "The registry refuses unauthenticated calls"
+      type: file
+      source: validation/validate-registry-still-private.sh
+      hint: "Do not change the registry."
+
+teardown:
+  keepCluster: false

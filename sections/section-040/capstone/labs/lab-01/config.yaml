@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Secure Service-To-Service Traffic With Istio (LAB). Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-045-capstone-040
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - mccutchen/go-httpbin:2.25.0
+      - curlimages/curl:8.22.0
+      - docker.io/istio/pilot:1.31.1
+      - docker.io/istio/proxyv2:1.31.1
+
+bootstrap:
+  init:
+    - name: seed-cluster
+      description: Install Istio and create the Starfleet workloads
+      type: file
+      source: bootstrap/01-seed-cluster.sh
+
+testing:
+  init:
+    - name: apply-solution
+      description: Apply the mesh policies and record the identities
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: strict-mtls-required
+      description: "starfleet refuses plain text and still serves mesh clients"
+      type: file
+      source: validation/validate-strict-mtls-required.sh
+      hint: "Create a PeerAuthentication named default in starfleet, without a selector, with mtls mode STRICT."
+    - name: metrics-port-only
+      description: "Port 9797 of scout answers plain text and the application port does not"
+      type: file
+      source: validation/validate-metrics-port-only.sh
+      hint: "Use a PeerAuthentication with a selector for app scout and portLevelMtls 9797 PERMISSIVE."
+    - name: scout-allows-only-shuttle-get
+      description: "Only GET from shuttle reaches the application port and metrics stay open"
+      type: file
+      source: validation/validate-scout-allows-only-shuttle-get.sh
+      hint: "An ALLOW policy denies everything it does not match. Add a rule for port 9898 with the shuttle principal and GET, and a second rule that opens port 9797 for GET."
+    - name: identity-evidence
+      description: "mesh-identities holds the real identities of scout and probe"
+      type: file
+      source: validation/validate-identity-evidence.sh
+      hint: "Read the certificates through curl localhost:15000/certs in each istio-proxy container."
+    - name: sidecars-present
+      description: "Every running pod in starfleet has a sidecar"
+      type: file
+      source: validation/validate-sidecars-present.sh
+      hint: "Do not remove injection to make a request work."
+    - name: no-permissive-namespace-policy
+      description: "The namespace-wide policy is STRICT"
+      type: file
+      source: validation/validate-no-permissive-namespace-policy.sh
+      hint: "Do not set the namespace-wide policy to PERMISSIVE or DISABLE to open the metrics port."
+
+teardown:
+  keepCluster: false

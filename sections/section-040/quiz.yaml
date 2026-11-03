@@ -1,0 +1,242 @@
+# Knowledge check for section 040. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats045-040
+course_id: ATS045
+exam_code: KCSA
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-040
+  title: "Service Mesh"
+questions:
+  - id: ats045-040-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Read a workload identity"
+    source_readings:
+      - sections/section-040/module-01/course-01-mesh-identity-and-certificates.md
+    prompt: "Which part of a workload certificate carries the identity that Istio policy uses?"
+    options:
+      - id: a
+        text: "The Subject Alternative Name, as a `spiffe://` URI."
+        explanation: "Correct. The SAN holds `spiffe://<trust domain>/ns/<namespace>/sa/<service account>`."
+      - id: b
+        text: "The pod IP address in the certificate subject."
+        explanation: "Pod IPs change, so they are not the identity."
+      - id: c
+        text: "The container image name."
+        explanation: "The image is not part of the certificate."
+      - id: d
+        text: "The name of the Deployment."
+        explanation: "The identity comes from the service account, not the Deployment."
+    correct_option: a
+    explanation: "Correct. The SAN holds `spiffe://<trust domain>/ns/<namespace>/sa/<service account>`."
+
+  - id: ats045-040-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain what the sidecar certificate proves"
+    source_readings:
+      - sections/section-040/module-01/course-01-mesh-identity-and-certificates.md
+    prompt: "Two Deployments in `starfleet` run as the same service account. What do their sidecar certificates show?"
+    options:
+      - id: a
+        text: "Different identities, one per Deployment."
+        explanation: "The identity is built from the service account."
+      - id: b
+        text: "No identity, because Deployments are not named."
+        explanation: "Both certificates carry the service account identity."
+      - id: c
+        text: "The identity of the node."
+        explanation: "Node identity is not used."
+      - id: d
+        text: "The same identity."
+        explanation: "Correct. The identity follows the service account, so a rule for one also covers the other."
+    correct_option: d
+    explanation: "Correct. The identity follows the service account, so a rule for one also covers the other."
+
+  - id: ats045-040-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe certificate issuance"
+    source_readings:
+      - sections/section-040/module-01/course-01-mesh-identity-and-certificates.md
+    prompt: "How does a sidecar obtain its certificate?"
+    options:
+      - id: a
+        text: "It copies a Secret that holds the private key."
+        explanation: "The key is generated inside the pod and no Secret holds it."
+      - id: b
+        text: "The API server signs it when the pod is created."
+        explanation: "The certificate authority in `istiod` signs it, not the API server."
+      - id: c
+        text: "It generates a key, sends a signing request with its service account token to `istiod`, and receives a signed certificate."
+        explanation: "Correct. `istiod` validates the token and signs the identity that it names."
+      - id: d
+        text: "The application requests it over HTTP."
+        explanation: "The proxy agent requests it."
+    correct_option: c
+    explanation: "Correct. `istiod` validates the token and signs the identity that it names."
+
+  - id: ats045-040-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain rotation"
+    source_readings:
+      - sections/section-040/module-01/course-01-mesh-identity-and-certificates.md
+    prompt: "A pod is deleted and its replacement starts. What stays the same in the replacement sidecar certificate?"
+    options:
+      - id: a
+        text: "The serial number."
+        explanation: "A new certificate has a new serial number."
+      - id: b
+        text: "The SPIFFE identity."
+        explanation: "Correct. The service account is unchanged, so `istiod` signs the same identity."
+      - id: c
+        text: "The private key."
+        explanation: "A new pod generates a new key."
+      - id: d
+        text: "The pod IP address."
+        explanation: "The IP is not part of the identity."
+    correct_option: b
+    explanation: "Correct. The service account is unchanged, so `istiod` signs the same identity."
+
+  - id: ats045-040-q05
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Compare the mTLS modes"
+    source_readings:
+      - sections/section-040/module-01/course-02-mtls-modes-and-peer-authentication.md
+    prompt: "Which mode accepts both mutual TLS and plain-text connections?"
+    options:
+      - id: a
+        text: "`PERMISSIVE`"
+        explanation: "Correct. It is the default and exists for gradual adoption."
+      - id: b
+        text: "`STRICT`"
+        explanation: "STRICT accepts only mTLS."
+      - id: c
+        text: "`DISABLE`"
+        explanation: "DISABLE accepts only plain text."
+      - id: d
+        text: "`UNSET`"
+        explanation: "UNSET inherits the mode from a broader policy."
+    correct_option: a
+    explanation: "Correct. It is the default and exists for gradual adoption."
+
+  - id: ats045-040-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Predict a refused client"
+    source_readings:
+      - sections/section-040/module-01/course-02-mtls-modes-and-peer-authentication.md
+    prompt: "A client without a sidecar sends plain HTTP to a workload under a `STRICT` policy. What does it receive?"
+    options:
+      - id: a
+        text: "`403` with `RBAC: access denied`."
+        explanation: "403 comes from authorization, after the connection is accepted."
+      - id: b
+        text: "`200`, because the Service port is open."
+        explanation: "The strict sidecar closes plain connections."
+      - id: c
+        text: "`401` with a login page."
+        explanation: "Peer authentication does not return a login page."
+      - id: d
+        text: "No HTTP response, because the sidecar closes the connection."
+        explanation: "Correct. `curl` reports `000` for the status."
+    correct_option: d
+    explanation: "Correct. `curl` reports `000` for the status."
+
+  - id: ats045-040-q07
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Write a port exception"
+    source_readings:
+      - sections/section-040/module-01/course-02-mtls-modes-and-peer-authentication.md
+    prompt: "What must a `PeerAuthentication` that sets `portLevelMtls` also have?"
+    options:
+      - id: a
+        text: "A namespace of `istio-system`."
+        explanation: "The root namespace sets mesh-wide policy and is not required."
+      - id: b
+        text: "A `when` condition."
+        explanation: "PeerAuthentication has no `when` field."
+      - id: c
+        text: "A `selector` that matches the workload, and the port number is the container port."
+        explanation: "Correct. Port-level settings need a selector and use the workload port."
+      - id: d
+        text: "A matching `Service` port number."
+        explanation: "The setting uses the container port, not the Service port."
+    correct_option: c
+    explanation: "Correct. Port-level settings need a selector and use the workload port."
+
+  - id: ats045-040-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Predict allow-policy behavior"
+    source_readings:
+      - sections/section-040/module-01/course-03-authorization-and-mesh-limits.md
+    prompt: "A workload has no policy. You add one `ALLOW` policy with a rule for GET from `sa/shuttle`. What happens to a request from another service account?"
+    options:
+      - id: a
+        text: "It is still allowed, because ALLOW only adds permissions."
+        explanation: "Once an ALLOW policy selects the workload, unlisted requests are denied."
+      - id: b
+        text: "It is denied with `403`."
+        explanation: "Correct. Requests that match no rule of an ALLOW policy are denied."
+      - id: c
+        text: "It is redirected to `shuttle`."
+        explanation: "Policy does not redirect requests."
+      - id: d
+        text: "It is logged and allowed."
+        explanation: "That would need an AUDIT action, and AUDIT does not deny."
+    correct_option: b
+    explanation: "Correct. Requests that match no rule of an ALLOW policy are denied."
+
+  - id: ats045-040-q09
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Match ports in a rule"
+    source_readings:
+      - sections/section-040/module-01/course-03-authorization-and-mesh-limits.md
+    prompt: "A Service maps port 80 to container port 9898. Which value does `operation.ports` in an AuthorizationPolicy use?"
+    options:
+      - id: a
+        text: "`9898`"
+        explanation: "Correct. The rule matches the container port."
+      - id: b
+        text: "`80`"
+        explanation: "The sidecar evaluates the destination port on the pod."
+      - id: c
+        text: "The node port."
+        explanation: "Node ports are not used by the sidecar."
+      - id: d
+        text: "The Service name."
+        explanation: "A name is not a port."
+    correct_option: a
+    explanation: "Correct. The rule matches the container port."
+
+  - id: ats045-040-q10
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "State what remains outside the mesh"
+    source_readings:
+      - sections/section-040/module-01/course-03-authorization-and-mesh-limits.md
+    prompt: "A mesh enforces STRICT mTLS and an identity-based allow policy. Which risk remains?"
+    options:
+      - id: a
+        text: "Plain text between two sidecars."
+        explanation: "STRICT protects that hop."
+      - id: b
+        text: "A caller without a certificate reaching the application port."
+        explanation: "STRICT refuses that connection."
+      - id: c
+        text: "A caller using a different service account."
+        explanation: "The allow policy denies it."
+      - id: d
+        text: "A caller with an allowed identity can repeat a non-idempotent request, and the application must handle it."
+        explanation: "Correct. Retry safety and user permissions are decided in the application."
+    correct_option: d
+    explanation: "Correct. Retry safety and user permissions are decided in the application."

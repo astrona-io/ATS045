@@ -1,0 +1,64 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Pin Images By Digest And Mount Credentials As Files (LAB). Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-045-lab-010-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - mccutchen/go-httpbin:2.25.0
+      - curlimages/curl:8.22.0
+
+bootstrap:
+  init:
+    - name: seed-cluster
+      description: Create the workloads and the uplink Deployment with a password in an environment variable
+      type: file
+      source: bootstrap/01-seed-cluster.sh
+
+testing:
+  init:
+    - name: apply-solution
+      description: Apply the reference solution
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: images-pinned
+      description: scout and probe use digest references
+      type: file
+      source: validation/validate-images-pinned.sh
+      hint: Read the digest from status.containerStatuses[].imageID and use kubectl set image with repository@sha256:digest. A tag plus no digest fails.
+    - name: no-password-in-env
+      description: uplink has no DB_PASSWORD environment variable
+      type: file
+      source: validation/validate-no-password-in-env.sh
+      hint: Remove the env entry from the uplink container. A valueFrom reference to the Secret is also an environment variable and fails.
+    - name: secret-mounted-as-file
+      description: The password is mounted from Secret uplink-db at /etc/uplink
+      type: file
+      source: validation/validate-secret-mounted-as-file.sh
+      hint: Create Secret uplink-db with key password, add a secret volume and a read-only volumeMount at /etc/uplink.
+    - name: token-not-mounted
+      description: uplink receives no ServiceAccount token
+      type: file
+      source: validation/validate-token-not-mounted.sh
+      hint: Set automountServiceAccountToken false in the pod template of the Deployment, not only on the ServiceAccount, and wait for the rollout.
+    - name: workloads-available
+      description: All workloads are available and shuttle reaches scout
+      type: file
+      source: validation/validate-workloads-available.sh
+      hint: Check rollout status. A wrong digest leaves the pod in ImagePullBackOff.
+
+teardown:
+  keepCluster: false

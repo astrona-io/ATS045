@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Secure Access To A Private Image Repository (PLAYGROUND). A clean sandbox: no task, no grading, no `astrona submit`.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-045-playground-020-01
+  docs:
+    guide: docs/overview.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - curlimages/curl:8.22.0
+      - registry:2.8.3
+      - httpd:2.4-alpine
+      - quay.io/skopeo/stable:v1.18.0
+
+bootstrap:
+  init:
+    - name: prepare
+      description: Start the private registry, copy podinfo into it and apply the workloads
+      type: file
+      source: bootstrap/prepare.sh
+
+teardown:
+  keepCluster: false

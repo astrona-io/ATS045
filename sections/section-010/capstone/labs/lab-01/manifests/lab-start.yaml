@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: forge
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: registry-token
+  namespace: forge
+type: Opaque
+stringData:
+  token: forge-publish-42
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: build-runner
+  namespace: forge
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: default-admin
+  namespace: forge
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: forge
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: build-runner
+  namespace: forge
+  labels:
+    app: build-runner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: build-runner
+  template:
+    metadata:
+      labels:
+        app: build-runner
+    spec:
+      containers:
+        - name: build-runner
+          image: mccutchen/go-httpbin:2.25.0
+          env:
+            - name: REGISTRY_TOKEN
+              value: forge-publish-42
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              memory: 64Mi

@@ -1,0 +1,16 @@
+spec:
+  template:
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: uplink
+          env: null
+          volumeMounts:
+            - name: db-credentials
+              mountPath: /etc/uplink
+              readOnly: true
+      volumes:
+        - name: db-credentials
+          secret:
+            secretName: uplink-db
+            defaultMode: 0400

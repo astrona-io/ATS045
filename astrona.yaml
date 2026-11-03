@@ -1,9 +1,8 @@
-# Reading-only course. YAML assessments are registered separately in assessments/index.yaml.
 training:
   id: ATS045
   title: 'KCSA: Platform Security'
   description: Concept lessons, diagrams and original scenario assessments covering every published objective
-    in this KCSA domain. No labs or playgrounds.
+    in this KCSA domain.
   certification:
     name: Kubernetes and Cloud Native Security Associate
     code: KCSA
@@ -36,130 +35,458 @@ modules:
     title: How This Course Is Made
     path: sections/intro/course-03-how-this-course-is-made.md
 - id: module-010
-  title: Supply Chain Security
-  description: Concept lessons and scenario reasoning for Supply Chain Security.
-  maturity: alpha
+  title: "Supply Chain Security"
+  description: "Trace trust from source to running container: digests, signatures, provenance, SBOMs and scans, pinning images, and protecting credentials in the runtime."
+  status: alpha
   content:
   - type: reading
-    title: 'Supply Chain Security: Introduction'
+    title: "Supply Chain Security: Introduction"
     path: sections/section-010/README.md
   - type: reading
-    title: Supply Chain Trust And Verification
+    title: "Trust What You Deploy"
     path: sections/section-010/module-01/course.md
   - type: reading
-    title: Artifact Evidence And Sensitive Build Inputs
+    title: "Artifact Evidence And Sensitive Build Inputs"
     path: sections/section-010/module-01/course-01-artifact-evidence-and-sensitive-build-inputs.md
   - type: reading
-    title: Connecting Verification To Execution Policy
+    title: "Connecting Verification To Execution Policy"
     path: sections/section-010/module-01/course-02-connecting-verification-to-execution-policy.md
   - type: reading
+    title: "Credentials And Service Account Tokens"
+    path: sections/section-010/module-01/course-03-credentials-and-service-account-tokens.md
+  - type: reading
+    title: Question
+    path: sections/section-010/module-01/labs/lab-01/question.md
+  - type: lab
+    title: "Pin Images By Digest And Mount Credentials As Files"
+    path: sections/section-010/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 20m
+    topic: supply-chain
+    task_kind: build
+    tags: [image-digest, secret-volume, serviceaccount-token, least-privilege]
+    learning_goals:
+      - "Pin two Deployments to the digest of the image that runs"
+      - "Move a password from an environment variable to a Secret mounted as a read-only file"
+      - "Stop a pod from receiving a ServiceAccount token"
+    resources:
+      - name: "Images"
+        url: https://kubernetes.io/docs/concepts/containers/images/
+      - name: "Secrets"
+        url: https://kubernetes.io/docs/concepts/configuration/secret/
+  - type: reading
     title: Summary
-    path: sections/section-010/module-01/course-03-summary.md
+    path: sections/section-010/module-01/course-04-summary.md
+  - type: reading
+    title: Question
+    path: sections/section-010/capstone/labs/lab-01/question.md
+  - type: lab
+    title: "Harden A Build Runner Workload"
+    path: sections/section-010/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 30m
+    topic: supply-chain
+    task_kind: build
+    tags: [image-digest, secret, serviceaccount, rolebinding, security-context]
+    learning_goals:
+      - "Give a workload its own ServiceAccount without a token and remove a broad RoleBinding"
+      - "Pin the image by digest and replace an environment token with a mounted Secret"
+      - "Apply a hardened container security context and keep the workload available"
+    resources:
+      - name: "Configure Service Accounts for Pods"
+        url: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+      - name: "Security context"
+        url: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+  - type: quiz
+    title: "Knowledge Check: Supply Chain Security"
+    path: sections/section-010/quiz.yaml
+    pass_score: 70
 - id: module-020
-  title: Image Repository
-  description: Concept lessons and scenario reasoning for Image Repository.
-  maturity: alpha
+  title: "Image Repository"
+  description: "Secure access to an image repository: how registries store images, what authentication does and does not cover, pull Secrets, ServiceAccounts, pull policy and credential rotation."
+  status: alpha
   content:
   - type: reading
-    title: 'Image Repository: Introduction'
+    title: "Image Repository: Introduction"
     path: sections/section-020/README.md
   - type: reading
-    title: Repository Access And Artifact Retention
+    title: "Secure Access To A Private Image Repository"
     path: sections/section-020/module-01/course.md
   - type: reading
-    title: Image References And Stored Layers
+    title: "Image References And Stored Layers"
     path: sections/section-020/module-01/course-01-image-references-and-stored-layers.md
   - type: reading
-    title: Protecting Publishers, Readers And Repository State
+    title: "Protecting Publishers, Readers And Repository State"
     path: sections/section-020/module-01/course-02-protecting-publishers-readers-and-repository-state.md
   - type: reading
+    title: "Pull Secrets And Pull Policy"
+    path: sections/section-020/module-01/course-03-pull-secrets-and-pull-policy.md
+  - type: reading
+    title: Question
+    path: sections/section-020/module-01/labs/lab-01/question.md
+  - type: lab
+    title: "Fix ImagePullBackOff With A Pull Secret"
+    path: sections/section-020/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 20m
+    topic: image-repository
+    task_kind: build
+    tags: [registry, imagepullsecrets, serviceaccount]
+    learning_goals:
+      - "Create a docker-registry Secret for a private registry"
+      - "Attach it to ServiceAccounts so pods can pull"
+      - "Keep the registry private"
+    resources:
+      - name: "Pull an Image from a Private Registry"
+        url: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+      - name: "Images"
+        url: https://kubernetes.io/docs/concepts/containers/images/
+  - type: reading
     title: Summary
-    path: sections/section-020/module-01/course-03-summary.md
+    path: sections/section-020/module-01/course-04-summary.md
+  - type: reading
+    title: Question
+    path: sections/section-020/capstone/labs/lab-01/question.md
+  - type: lab
+    title: "Rotate Registry Pull Credentials And Pin Digests"
+    path: sections/section-020/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 30m
+    topic: image-repository
+    task_kind: build
+    tags: [registry, credential-rotation, image-digest, imagepullpolicy]
+    learning_goals:
+      - "Replace a revoked pull credential in two namespaces"
+      - "Pin images to the digest the registry reports"
+      - "Set imagePullPolicy Always and keep workloads available"
+    resources:
+      - name: "Images"
+        url: https://kubernetes.io/docs/concepts/containers/images/
+      - name: "Pull an Image from a Private Registry"
+        url: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  - type: quiz
+    title: "Knowledge Check: Image Repository"
+    path: sections/section-020/quiz.yaml
+    pass_score: 70
 - id: module-030
-  title: Observability
-  description: Concept lessons and scenario reasoning for Observability.
-  maturity: alpha
+  title: "Observability"
+  description: "Record and read security evidence: audit policy levels and rule order, enabling audit logging on the API server, reading events, and the limits of collection, retention and different evidence sources."
+  status: alpha
   content:
   - type: reading
-    title: 'Observability: Introduction'
+    title: "Observability: Introduction"
     path: sections/section-030/README.md
   - type: reading
-    title: Security Observability And Evidence Quality
+    title: "Security Observability And Evidence Quality"
     path: sections/section-030/module-01/course.md
   - type: reading
-    title: Collection, Storage And Observation Limits
-    path: sections/section-030/module-01/course-01-collection-storage-and-observation-limits.md
+    title: "Audit Policy Rules, Levels And Stages"
+    path: sections/section-030/module-01/course-01-audit-policy-rules-levels-and-stages.md
   - type: reading
-    title: Security Signals Across Different Boundaries
-    path: sections/section-030/module-01/course-02-security-signals-across-different-boundaries.md
+    title: "Enable Audit Logging And Read Events"
+    path: sections/section-030/module-01/course-02-enable-audit-logging-and-read-events.md
+  - type: reading
+    title: "Collection, Retention And Evidence Limits"
+    path: sections/section-030/module-01/course-03-collection-retention-and-evidence-limits.md
+  - type: reading
+    title: Question
+    path: sections/section-030/module-01/labs/lab-01/question.md
+  - type: lab
+    title: "Record API Activity With Audit Logging"
+    path: sections/section-030/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: observability
+    task_kind: configure
+    tags: [audit, kube-apiserver, audit-policy, jq]
+    learning_goals:
+      - "Enable audit logging on the API server"
+      - "Write a policy with Secrets at Metadata and Deployments at RequestResponse"
+      - "Find the caller of a deletion in the audit log"
+    resources:
+      - name: "Auditing"
+        url: https://kubernetes.io/docs/tasks/debug/debug-cluster/audit/
   - type: reading
     title: Summary
-    path: sections/section-030/module-01/course-03-summary.md
+    path: sections/section-030/module-01/course-04-summary.md
+  - type: reading
+    title: Question
+    path: sections/section-030/capstone/labs/lab-01/question.md
+  - type: lab
+    title: "Audit Access Changes And Keep The Evidence"
+    path: sections/section-030/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 35m
+    topic: observability
+    task_kind: configure
+    tags: [audit, rbac, retention, jq]
+    learning_goals:
+      - "Enable audit logging with retention flags"
+      - "Record RBAC changes with bodies and Secrets without bodies"
+      - "Find who bound access and to whom"
+    resources:
+      - name: "Auditing"
+        url: https://kubernetes.io/docs/tasks/debug/debug-cluster/audit/
+  - type: quiz
+    title: "Knowledge Check: Observability"
+    path: sections/section-030/quiz.yaml
+    pass_score: 70
 - id: module-040
-  title: Service Mesh
-  description: Concept lessons and scenario reasoning for Service Mesh.
-  maturity: alpha
+  title: "Service Mesh"
+  description: "Mesh identity and policy in Istio: workload certificates and SPIFFE identity, mutual TLS modes and port exceptions, identity-based authorization, and what a mesh does not cover."
+  status: alpha
   content:
   - type: reading
-    title: 'Service Mesh: Introduction'
+    title: "Service Mesh: Introduction"
     path: sections/section-040/README.md
   - type: reading
-    title: Service Mesh Identity And Policy
+    title: "Service Mesh Identity And Policy"
     path: sections/section-040/module-01/course.md
   - type: reading
-    title: Transport Protection And Mesh Limits
-    path: sections/section-040/module-01/course-01-transport-protection-and-mesh-limits.md
+    title: "Mesh Identity And Certificates"
+    path: sections/section-040/module-01/course-01-mesh-identity-and-certificates.md
+  - type: reading
+    title: "Mutual TLS Modes And Peer Authentication"
+    path: sections/section-040/module-01/course-02-mtls-modes-and-peer-authentication.md
+  - type: reading
+    title: "Authorization And Mesh Limits"
+    path: sections/section-040/module-01/course-03-authorization-and-mesh-limits.md
+  - type: reading
+    title: Question
+    path: sections/section-040/module-01/labs/lab-01/question.md
+  - type: lab
+    title: "Require mTLS And Open One Port"
+    path: sections/section-040/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: service-mesh
+    task_kind: configure
+    tags: [istio, mtls, peerauthentication, spiffe]
+    learning_goals:
+      - "Require mutual TLS for a namespace"
+      - "Open one metrics port with a port-level exception"
+      - "Read a workload identity from its certificate"
+    resources:
+      - name: "Istio security"
+        url: https://istio.io/latest/docs/concepts/security/
   - type: reading
     title: Summary
-    path: sections/section-040/module-01/course-02-summary.md
+    path: sections/section-040/module-01/course-04-summary.md
+  - type: reading
+    title: Question
+    path: sections/section-040/capstone/labs/lab-01/question.md
+  - type: lab
+    title: "Secure Service-To-Service Traffic With Istio"
+    path: sections/section-040/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 35m
+    topic: service-mesh
+    task_kind: configure
+    tags: [istio, mtls, authorizationpolicy, spiffe]
+    learning_goals:
+      - "Require mutual TLS and open one port"
+      - "Authorize by identity, method and port"
+      - "Record the certificate identities"
+    resources:
+      - name: "Istio security"
+        url: https://istio.io/latest/docs/concepts/security/
+  - type: quiz
+    title: "Knowledge Check: Service Mesh"
+    path: sections/section-040/quiz.yaml
+    pass_score: 70
 - id: module-050
-  title: PKI
-  description: Concept lessons and scenario reasoning for PKI.
-  maturity: alpha
+  title: "PKI"
+  description: "Public key infrastructure for Kubernetes: keys and certificate verification, the certificate authorities of a cluster and client certificates, and rotation, expiry and response to a leaked certificate."
+  status: alpha
   content:
   - type: reading
-    title: 'PKI: Introduction'
+    title: "PKI: Introduction"
     path: sections/section-050/README.md
   - type: reading
-    title: Certificates And Public Key Infrastructure
+    title: "Certificates And Public Key Infrastructure"
     path: sections/section-050/module-01/course.md
   - type: reading
-    title: PKI Trust And Certificate Verification
-    path: sections/section-050/module-01/course-01-pki-trust-and-certificate-verification.md
+    title: "Keys, Certificates And Chain Verification"
+    path: sections/section-050/module-01/course-01-keys-certificates-and-chain-verification.md
+  - type: reading
+    title: "Cluster PKI And Client Certificates"
+    path: sections/section-050/module-01/course-02-cluster-pki-and-client-certificates.md
+  - type: reading
+    title: "Rotation, Expiry And Compromise"
+    path: sections/section-050/module-01/course-03-rotation-expiry-and-compromise.md
+  - type: reading
+    title: Question
+    path: sections/section-050/module-01/labs/lab-01/question.md
+  - type: lab
+    title: "Read The Cluster CA And Issue A Short-Lived Client Certificate"
+    path: sections/section-050/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: pki
+    task_kind: configure
+    tags: [pki, certificates, csr, rbac]
+    learning_goals:
+      - "Read the cluster CA fingerprint and certificate expiry from the node"
+      - "Issue a one-day client certificate with the CertificateSigningRequest API"
+      - "Grant least-privilege access with a Role and RoleBinding"
+    resources:
+      - name: "Certificates and Certificate Signing Requests"
+        url: https://kubernetes.io/docs/reference/access-authn-authz/certificate-signing-requests/
   - type: reading
     title: Summary
-    path: sections/section-050/module-01/course-02-summary.md
+    path: sections/section-050/module-01/course-04-summary.md
+  - type: reading
+    title: Question
+    path: sections/section-050/capstone/labs/lab-01/question.md
+  - type: lab
+    title: "Replace A Leaked Client Certificate"
+    path: sections/section-050/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 35m
+    topic: pki
+    task_kind: configure
+    tags: [pki, certificates, csr, rbac]
+    learning_goals:
+      - "Remove all access of a leaked certificate"
+      - "Issue a two-hour replacement certificate"
+      - "Record the cluster CA evidence"
+    resources:
+      - name: "PKI certificates and requirements"
+        url: https://kubernetes.io/docs/setup/best-practices/certificates/
+  - type: quiz
+    title: "Knowledge Check: PKI"
+    path: sections/section-050/quiz.yaml
+    pass_score: 70
 - id: module-060
-  title: Connectivity
-  description: Concept lessons and scenario reasoning for Connectivity.
-  maturity: alpha
+  title: "Connectivity"
+  description: "Connectivity and protected network paths: the hops of a request and where TLS ends, how NetworkPolicy isolates pods and allows single paths, and the management ports of a cluster with how to verify a policy."
+  status: alpha
   content:
   - type: reading
-    title: 'Connectivity: Introduction'
+    title: "Connectivity: Introduction"
     path: sections/section-060/README.md
   - type: reading
-    title: Connectivity And Protected Network Paths
+    title: "Connectivity And Protected Network Paths"
     path: sections/section-060/module-01/course.md
   - type: reading
-    title: Designing Allowed Paths Without Implicit Trust
-    path: sections/section-060/module-01/course-01-designing-allowed-paths-without-implicit-trust.md
+    title: "Ingress Paths And Where Encryption Stops"
+    path: sections/section-060/module-01/course-01-ingress-paths-and-where-encryption-stops.md
+  - type: reading
+    title: "NetworkPolicy Mechanics"
+    path: sections/section-060/module-01/course-02-networkpolicy-mechanics.md
+  - type: reading
+    title: "Management Paths And Verifying A Policy"
+    path: sections/section-060/module-01/course-03-management-paths-and-verifying-a-policy.md
+  - type: reading
+    title: Question
+    path: sections/section-060/module-01/labs/lab-01/question.md
+  - type: lab
+    title: "Isolate A Namespace And Allow One Path"
+    path: sections/section-060/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: networking
+    task_kind: configure
+    tags: [networkpolicy, default-deny, egress, dns]
+    learning_goals:
+      - "Isolate a namespace with a default-deny ingress policy"
+      - "Allow one client to reach one backend on its container port"
+      - "Restrict the egress of a client and keep DNS working"
+    resources:
+      - name: "Network Policies"
+        url: https://kubernetes.io/docs/concepts/services-networking/network-policies/
   - type: reading
     title: Summary
-    path: sections/section-060/module-01/course-02-summary.md
+    path: sections/section-060/module-01/course-04-summary.md
+  - type: reading
+    title: Question
+    path: sections/section-060/capstone/labs/lab-01/question.md
+  - type: lab
+    title: "Segment The Starfleet Network"
+    path: sections/section-060/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 40m
+    topic: networking
+    task_kind: configure
+    tags: [networkpolicy, default-deny, egress, metrics]
+    learning_goals:
+      - "Deny all traffic in both directions"
+      - "Allow only the application paths and names"
+      - "Open a management port for one client"
+      - "Contain egress to an outside server"
+    resources:
+      - name: "Network Policies"
+        url: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+  - type: quiz
+    title: "Knowledge Check: Connectivity"
+    path: sections/section-060/quiz.yaml
+    pass_score: 70
 - id: module-070
-  title: Admission Control
-  description: Concept lessons and scenario reasoning for Admission Control.
-  maturity: alpha
+  title: "Admission Control"
+  description: "Admission control: the request chain and the built-in controllers, Pod Security Admission and validating admission policy, and admission webhooks with their failure behavior and exceptions."
+  status: alpha
   content:
   - type: reading
-    title: 'Admission Control: Introduction'
+    title: "Admission Control: Introduction"
     path: sections/section-070/README.md
   - type: reading
-    title: Admission Policy And Extension Trust
+    title: "Admission Policy And Extension Trust"
     path: sections/section-070/module-01/course.md
   - type: reading
-    title: Admission As A Controlled Resource Decision
-    path: sections/section-070/module-01/course-01-admission-as-a-controlled-resource-decision.md
+    title: "The Admission Chain And Built-In Controllers"
+    path: sections/section-070/module-01/course-01-the-admission-chain-and-built-in-controllers.md
+  - type: reading
+    title: "Pod Security Admission And Validating Admission Policy"
+    path: sections/section-070/module-01/course-02-pod-security-admission-and-validating-admission-policy.md
+  - type: reading
+    title: "Admission Webhooks, Failure And Exceptions"
+    path: sections/section-070/module-01/course-03-admission-webhooks-failure-and-exceptions.md
+  - type: reading
+    title: Question
+    path: sections/section-070/module-01/labs/lab-01/question.md
+  - type: lab
+    title: "Enforce A Pod Standard And Write A Validation Policy"
+    path: sections/section-070/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: admission
+    task_kind: configure
+    tags: [admission, pod-security, validating-admission-policy, cel]
+    learning_goals:
+      - "Enforce the restricted Pod Security level on one namespace"
+      - "Write a ValidatingAdmissionPolicy and a Deny binding"
+      - "Keep the scope to one namespace"
+    resources:
+      - name: "Admission Control in Kubernetes"
+        url: https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/
+      - name: "Validating Admission Policy"
+        url: https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/
   - type: reading
     title: Summary
-    path: sections/section-070/module-01/course-02-summary.md
+    path: sections/section-070/module-01/course-04-summary.md
+  - type: reading
+    title: Question
+    path: sections/section-070/capstone/labs/lab-01/question.md
+  - type: lab
+    title: "Close The Admission Gaps In Starfleet"
+    path: sections/section-070/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 35m
+    topic: admission
+    task_kind: configure
+    tags: [admission, pod-security, validating-admission-policy, binding]
+    learning_goals:
+      - "Find why a Pod Security level and a policy do not protect a namespace"
+      - "Raise the level and change a Warn binding to Deny"
+      - "Fix the namespace selector"
+    resources:
+      - name: "Pod Security Admission"
+        url: https://kubernetes.io/docs/concepts/security/pod-security-admission/
+  - type: quiz
+    title: "Knowledge Check: Admission Control"
+    path: sections/section-070/quiz.yaml
+    pass_score: 70
+  - type: quiz
+    title: "Final Knowledge Check: Platform Security"
+    path: sections/final-domain-quiz.yaml
+    pass_score: 70

@@ -1,0 +1,242 @@
+# Knowledge check for section 050. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats045-050
+course_id: ATS045
+exam_code: KCSA
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-050
+  title: "PKI"
+questions:
+  - id: ats045-050-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain what a signature proves"
+    source_readings:
+      - sections/section-050/module-01/course-01-keys-certificates-and-chain-verification.md
+    prompt: "What does a valid signature from a certificate authority on a certificate show?"
+    options:
+      - id: a
+        text: "That the issuer's key signed exactly these fields, and the fields were not changed afterward."
+        explanation: "Correct. The signature covers the subject, names, public key, validity and usage."
+      - id: b
+        text: "That the server is safe to use for every purpose."
+        explanation: "A signature does not widen the purposes in the certificate."
+      - id: c
+        text: "That the private key is stored securely."
+        explanation: "A signature says nothing about how the key is stored."
+      - id: d
+        text: "That the certificate cannot expire."
+        explanation: "Validity dates are checked separately."
+    correct_option: a
+    explanation: "Correct. The signature covers the subject, names, public key, validity and usage."
+
+  - id: ats045-050-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Find the trust anchor"
+    source_readings:
+      - sections/section-050/module-01/course-01-keys-certificates-and-chain-verification.md
+    prompt: "Why does a client accept a self-signed root CA certificate?"
+    options:
+      - id: a
+        text: "Because its signature is the strongest."
+        explanation: "A self-signed signature is not checked against another authority."
+      - id: b
+        text: "Because the root names every server."
+        explanation: "A root does not name servers."
+      - id: c
+        text: "Because it has no expiry."
+        explanation: "Roots have validity periods too."
+      - id: d
+        text: "Because the client was configured to trust it, in a file or trust store."
+        explanation: "Correct. Trust in a root comes from configuration."
+    correct_option: d
+    explanation: "Correct. Trust in a root comes from configuration."
+
+  - id: ats045-050-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Diagnose a name failure"
+    source_readings:
+      - sections/section-050/module-01/course-01-keys-certificates-and-chain-verification.md
+    prompt: "A client connects to the API server through a name that is missing from the SAN list. The chain is valid. What happens?"
+    options:
+      - id: a
+        text: "The connection succeeds, because the chain is valid."
+        explanation: "The name check is a separate verification step."
+      - id: b
+        text: "The server regenerates its certificate."
+        explanation: "Servers do not change certificates on request."
+      - id: c
+        text: "Verification fails, because the certificate is not valid for that name."
+        explanation: "Correct. A valid chain does not replace the name check."
+      - id: d
+        text: "The client falls back to a trust store."
+        explanation: "A client does not widen trust after a failure."
+    correct_option: c
+    explanation: "Correct. A valid chain does not replace the name check."
+
+  - id: ats045-050-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain the cluster authorities"
+    source_readings:
+      - sections/section-050/module-01/course-02-cluster-pki-and-client-certificates.md
+    prompt: "Why does a kubeadm cluster have a separate CA for etcd?"
+    options:
+      - id: a
+        text: "Because etcd cannot use TLS."
+        explanation: "etcd uses TLS with its own CA."
+      - id: b
+        text: "So a certificate signed by the cluster CA is not accepted by etcd, which limits what a stolen certificate reaches."
+        explanation: "Correct. Each authority signs a separate group of identities."
+      - id: c
+        text: "To speed up API requests."
+        explanation: "The split is for trust, not speed."
+      - id: d
+        text: "To store service account tokens."
+        explanation: "Service account tokens use a separate key pair."
+    correct_option: b
+    explanation: "Correct. Each authority signs a separate group of identities."
+
+  - id: ats045-050-q05
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Read a client identity"
+    source_readings:
+      - sections/section-050/module-01/course-02-cluster-pki-and-client-certificates.md
+    prompt: "A client certificate has the subject `CN=jane, O=auditors`. How does the API server see the request?"
+    options:
+      - id: a
+        text: "As the user `jane` in the group `auditors`."
+        explanation: "Correct. CN is the user and each O is a group."
+      - id: b
+        text: "As the group `jane` with the user `auditors`."
+        explanation: "CN is the user and O is the group."
+      - id: c
+        text: "As an anonymous user."
+        explanation: "The certificate authenticates the request."
+      - id: d
+        text: "As `system:masters`."
+        explanation: "That group appears only if it is in the subject."
+    correct_option: a
+    explanation: "Correct. CN is the user and each O is a group."
+
+  - id: ats045-050-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe issuing a certificate"
+    source_readings:
+      - sections/section-050/module-01/course-02-cluster-pki-and-client-certificates.md
+    prompt: "In the CertificateSigningRequest flow, who creates the private key?"
+    options:
+      - id: a
+        text: "The approver, who sends it to the user."
+        explanation: "The approver never needs the private key."
+      - id: b
+        text: "The controller manager."
+        explanation: "The signer signs a request and creates no key."
+      - id: c
+        text: "The kubelet."
+        explanation: "The kubelet is not part of this flow."
+      - id: d
+        text: "The user, and the key never leaves their machine."
+        explanation: "Correct. The request holds only the public key."
+    correct_option: d
+    explanation: "Correct. The request holds only the public key."
+
+  - id: ats045-050-q07
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Limit certificate lifetime"
+    source_readings:
+      - sections/section-050/module-01/course-02-cluster-pki-and-client-certificates.md
+    prompt: "Which field on a CertificateSigningRequest limits how long the issued certificate is valid?"
+    options:
+      - id: a
+        text: "`usages`"
+        explanation: "usages lists purposes, not duration."
+      - id: b
+        text: "`signerName`"
+        explanation: "signerName chooses the authority."
+      - id: c
+        text: "`expirationSeconds`"
+        explanation: "Correct. The signer issues at most this lifetime."
+      - id: d
+        text: "`request`"
+        explanation: "request holds the signing request data."
+    correct_option: c
+    explanation: "Correct. The signer issues at most this lifetime."
+
+  - id: ats045-050-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain missing revocation"
+    source_readings:
+      - sections/section-050/module-01/course-03-rotation-expiry-and-compromise.md
+    prompt: "A user's client certificate leaked. The `CertificateSigningRequest` object for it is deleted. What happens to the certificate?"
+    options:
+      - id: a
+        text: "It stops working immediately."
+        explanation: "The API server does not look up the request object."
+      - id: b
+        text: "It still authenticates until it expires, because the API server checks the signature, chain and time only."
+        explanation: "Correct. Deleting the object does not invalidate the signed file."
+      - id: c
+        text: "It is moved to a revocation list."
+        explanation: "The API server has no revocation list for client certificates."
+      - id: d
+        text: "It becomes valid only for `system:masters`."
+        explanation: "The subject does not change."
+    correct_option: b
+    explanation: "Correct. Deleting the object does not invalidate the signed file."
+
+  - id: ats045-050-q09
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Remove all access of a leaked certificate"
+    source_readings:
+      - sections/section-050/module-01/course-03-rotation-expiry-and-compromise.md
+    prompt: "A leaked certificate has `CN=ops-1, O=ops`. A ClusterRoleBinding names the user `ops-1`, and another names the group `ops`. You delete only the user binding. What is true?"
+    options:
+      - id: a
+        text: "The certificate still has the access of the group binding."
+        explanation: "Correct. Bindings match the user or any group, so remove both."
+      - id: b
+        text: "The certificate has no access left."
+        explanation: "The group binding still grants access."
+      - id: c
+        text: "The certificate is revoked."
+        explanation: "Removing a binding does not revoke a certificate."
+      - id: d
+        text: "The group binding is deleted with the user binding."
+        explanation: "Bindings are independent objects."
+    correct_option: a
+    explanation: "Correct. Bindings match the user or any group, so remove both."
+
+  - id: ats045-050-q10
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Plan a CA rotation"
+    source_readings:
+      - sections/section-050/module-01/course-03-rotation-expiry-and-compromise.md
+    prompt: "What is the safe order to replace a CA certificate?"
+    options:
+      - id: a
+        text: "Replace the CA, then give the new CA to peers."
+        explanation: "Peers that lack the new CA reject the new certificates."
+      - id: b
+        text: "Delete the old CA and wait for peers to fetch the new one."
+        explanation: "Peers do not fetch trust automatically."
+      - id: c
+        text: "Restart every pod and keep the old CA key."
+        explanation: "A restart does not install the new trust."
+      - id: d
+        text: "Distribute a bundle with both CAs, reissue leaf certificates from the new CA, then remove the old CA."
+        explanation: "Correct. Trust must exist before the new certificates are used."
+    correct_option: d
+    explanation: "Correct. Trust must exist before the new certificates are used."

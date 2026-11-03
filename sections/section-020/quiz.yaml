@@ -1,0 +1,242 @@
+# Knowledge check for section 020. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats045-020
+course_id: ATS045
+exam_code: KCSA
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-020
+  title: "Image Repository"
+questions:
+  - id: ats045-020-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Read the parts of an image reference"
+    source_readings:
+      - sections/section-020/module-01/course-01-image-references-and-stored-layers.md
+    prompt: "In the reference `localhost:30500/starfleet/podinfo:6.15.0`, which part selects the registry to contact?"
+    options:
+      - id: a
+        text: "`localhost:30500`"
+        explanation: "Correct. The first component, when it holds a dot, a colon or is localhost, is the registry host and port."
+      - id: b
+        text: "`starfleet`"
+        explanation: "This is the repository path inside the registry."
+      - id: c
+        text: "`podinfo`"
+        explanation: "This is the image name within the repository path."
+      - id: d
+        text: "`6.15.0`"
+        explanation: "This is the tag, a movable name for a manifest."
+    correct_option: a
+    explanation: "Correct. The first component, when it holds a dot, a colon or is localhost, is the registry host and port."
+
+  - id: ats045-020-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain what a registry stores"
+    source_readings:
+      - sections/section-020/module-01/course-01-image-references-and-stored-layers.md
+    prompt: "What does a registry store for one image?"
+    options:
+      - id: a
+        text: "Only the container filesystem as one file."
+        explanation: "Images are split into layers so identical layers are stored once."
+      - id: b
+        text: "The running containers of the image."
+        explanation: "Registries store images, not running containers."
+      - id: c
+        text: "Only the tag names."
+        explanation: "Tags are pointers. The content is in manifests and blobs."
+      - id: d
+        text: "A manifest that lists layer and config blobs, and the blobs addressed by digest."
+        explanation: "Correct. The manifest ties together content-addressed blobs and can be reached by tag or digest."
+    correct_option: d
+    explanation: "Correct. The manifest ties together content-addressed blobs and can be reached by tag or digest."
+
+  - id: ats045-020-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Distinguish authentication from authorization at a registry"
+    source_readings:
+      - sections/section-020/module-01/course-02-protecting-publishers-readers-and-repository-state.md
+    prompt: "The in-cluster registry in this section uses an htpasswd file. What does it enforce?"
+    options:
+      - id: a
+        text: "Separate read and write rights for each account."
+        explanation: "Per-repository or per-action rights need a registry with an authorization layer."
+      - id: b
+        text: "Signature verification of pushed images."
+        explanation: "Signatures need extra tooling and are not part of htpasswd."
+      - id: c
+        text: "Authentication only. Any valid account can push, pull and delete."
+        explanation: "Correct. htpasswd proves who the caller is but does not limit what that account may do."
+      - id: d
+        text: "Encryption of the stored blobs."
+        explanation: "htpasswd does not encrypt stored data."
+    correct_option: c
+    explanation: "Correct. htpasswd proves who the caller is but does not limit what that account may do."
+
+  - id: ats045-020-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Name the risk of shared push credentials"
+    source_readings:
+      - sections/section-020/module-01/course-02-protecting-publishers-readers-and-repository-state.md
+    prompt: "Why should the account used by pipelines to push be different from the account used by nodes to pull?"
+    options:
+      - id: a
+        text: "Pull accounts are faster."
+        explanation: "Speed does not depend on the account."
+      - id: b
+        text: "A leaked pull credential then cannot change what the registry serves."
+        explanation: "Correct. A pull-only account limits damage to disclosure. A push account can overwrite tags."
+      - id: c
+        text: "Kubernetes refuses to use one account for both."
+        explanation: "Kubernetes accepts any credential the registry accepts."
+      - id: d
+        text: "Push accounts cannot be rotated."
+        explanation: "Both kinds can be rotated."
+    correct_option: b
+    explanation: "Correct. A pull-only account limits damage to disclosure. A push account can overwrite tags."
+
+  - id: ats045-020-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain why deleting a tag does not remove content"
+    source_readings:
+      - sections/section-020/module-01/course-02-protecting-publishers-readers-and-repository-state.md
+    prompt: "An operator deletes the tag `6.15.0` from a repository. What is the effect on the stored layers?"
+    options:
+      - id: a
+        text: "They stay until the manifest is deleted and garbage collection runs."
+        explanation: "Correct. Content is removed only after the manifest is unreferenced and the registry collects garbage."
+      - id: b
+        text: "They are removed at once."
+        explanation: "Deleting a tag does not delete blobs."
+      - id: c
+        text: "They are copied to every node."
+        explanation: "Nodes only hold layers they pulled."
+      - id: d
+        text: "They are signed automatically."
+        explanation: "Deletion has no signing effect."
+    correct_option: a
+    explanation: "Correct. Content is removed only after the manifest is unreferenced and the registry collects garbage."
+
+  - id: ats045-020-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Identify what a pull Secret contains"
+    source_readings:
+      - sections/section-020/module-01/course-03-pull-secrets-and-pull-policy.md
+    prompt: "What type of Secret holds registry credentials for `imagePullSecrets`?"
+    options:
+      - id: a
+        text: "`Opaque` with a key called `password`"
+        explanation: "Opaque Secrets are not read by the kubelet for pulls."
+      - id: b
+        text: "`kubernetes.io/tls`"
+        explanation: "TLS Secrets hold a certificate and key for serving."
+      - id: c
+        text: "`kubernetes.io/service-account-token`"
+        explanation: "These Secrets hold tokens for the API server."
+      - id: d
+        text: "`kubernetes.io/dockerconfigjson` with a `.dockerconfigjson` key"
+        explanation: "Correct. The kubelet reads this format, keyed by registry host."
+    correct_option: d
+    explanation: "Correct. The kubelet reads this format, keyed by registry host."
+
+  - id: ats045-020-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Attach a pull Secret to workloads"
+    source_readings:
+      - sections/section-020/module-01/course-03-pull-secrets-and-pull-policy.md
+    prompt: "A team wants every pod that uses a ServiceAccount to get the pull Secret without editing each Deployment. What do they set?"
+    options:
+      - id: a
+        text: "`imagePullPolicy` on the ServiceAccount"
+        explanation: "This field exists on containers, not on ServiceAccounts."
+      - id: b
+        text: "A label on the Secret"
+        explanation: "Labels do not attach a Secret to pods."
+      - id: c
+        text: "`imagePullSecrets` on the ServiceAccount"
+        explanation: "Correct. The admission step copies the list into pods that use the account."
+      - id: d
+        text: "An annotation on the namespace"
+        explanation: "Namespace annotations do not supply pull credentials."
+    correct_option: c
+    explanation: "Correct. The admission step copies the list into pods that use the account."
+
+  - id: ats045-020-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Predict the effect of imagePullPolicy"
+    source_readings:
+      - sections/section-020/module-01/course-03-pull-secrets-and-pull-policy.md
+    prompt: "A node already holds a layer set for `localhost:30500/starfleet/podinfo:6.15.0`. The pod uses `imagePullPolicy: IfNotPresent` and the pull Secret is revoked. What happens?"
+    options:
+      - id: a
+        text: "The pod fails with ImagePullBackOff."
+        explanation: "No pull is attempted when the image is already on the node."
+      - id: b
+        text: "The pod starts from the cached image, so the revocation is not noticed."
+        explanation: "Correct. Only `Always` forces a registry check and proves access on every start."
+      - id: c
+        text: "The kubelet deletes the cached image."
+        explanation: "The kubelet does not delete images on credential errors."
+      - id: d
+        text: "The pod stays Pending."
+        explanation: "The pod can be scheduled and started."
+    correct_option: b
+    explanation: "Correct. Only `Always` forces a registry check and proves access on every start."
+
+  - id: ats045-020-q09
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Diagnose a pull failure in order"
+    source_readings:
+      - sections/section-020/module-01/course-03-pull-secrets-and-pull-policy.md
+    prompt: "A pod shows ErrImagePull with `401 Unauthorized`. Which check should come first?"
+    options:
+      - id: a
+        text: "Whether the pull Secret exists in the pod's namespace and holds a valid account for that registry host."
+        explanation: "Correct. A 401 means the registry rejected the credential, so check the Secret and its host key first."
+      - id: b
+        text: "Whether the node has enough disk space."
+        explanation: "Disk pressure gives a different message."
+      - id: c
+        text: "Whether the Deployment has enough replicas."
+        explanation: "Replica count does not cause a 401."
+      - id: d
+        text: "Whether the cluster DNS works."
+        explanation: "A DNS failure gives a name resolution error, not a 401."
+    correct_option: a
+    explanation: "Correct. A 401 means the registry rejected the credential, so check the Secret and its host key first."
+
+  - id: ats045-020-q10
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Rotate a pull credential safely"
+    source_readings:
+      - sections/section-020/module-01/course-03-pull-secrets-and-pull-policy.md
+    prompt: "A credential is revoked and a new one is issued. Which result leaves the cluster correct?"
+    options:
+      - id: a
+        text: "Create a second Secret with a new name and leave the old one."
+        explanation: "The revoked credential stays stored and may be used by other ServiceAccounts."
+      - id: b
+        text: "Replace the Secret in one namespace only."
+        explanation: "Each namespace holds its own copy."
+      - id: c
+        text: "Change the tag of the image."
+        explanation: "The tag does not carry credentials."
+      - id: d
+        text: "Replace the credential in the existing Secret in every namespace that has it, then restart failed pods."
+        explanation: "Correct. Secrets are per namespace, and pods that failed need new pods to use the new value."
+    correct_option: d
+    explanation: "Correct. Secrets are per namespace, and pods that failed need new pods to use the new value."

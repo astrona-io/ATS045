@@ -5,13 +5,29 @@ exam_objectives:
 ---
 # Image Repository
 
-This section teaches repository access and artifact retention. These ideas help you explain system behavior and choose a suitable approach in a KCSA scenario.
+This section covers access to an image repository. It explains what a registry stores, what authentication does and does not protect, and how pull Secrets, ServiceAccounts and pull policy decide whether a node can start a workload.
 
-You will work through Repository Access And Artifact Retention. Each module introduces its goals, teaches the concepts through examples, and closes with a summary. Reusable YAML checkpoints review related objectives after selected section summaries. The course assessment index records their placement and coverage.
+The section has one module, Secure Access To A Private Image Repository. It has a playground, a graded lab and a capstone lab on a local kind cluster, and ends with a knowledge check. Each part is followed by the lab that practises it, and the module ends with a summary.
 
 ## Learning Outcomes
 
-- Distinguish mutable references from content-addressed artifact identity.
-- Compare repository push, pull and administrative privileges.
-- Identify sensitive build layers and retained artifact copies.
-- Relate publication integrity and credential rotation to deployment trust.
+- Read an image reference and the content a registry stores
+- State what authentication covers and what needs separate authorization
+- Create pull Secrets, attach them to ServiceAccounts and rotate them
+- Choose an imagePullPolicy and diagnose pull failures in order
+
+## Contents
+
+| Item | What it is |
+| --- | --- |
+| Image References And Stored Layers | Reading part |
+| Protecting Publishers, Readers And Repository State | Reading part |
+| Pull Secrets And Pull Policy | Reading part |
+| Summary | Reading part |
+| Fix ImagePullBackOff With A Pull Secret | Graded module lab (intermediate) |
+| Rotate Registry Pull Credentials And Pin Digests | Section capstone lab (advanced) |
+| Knowledge check | `quiz.yaml`, pass score 70 |
+
+## Authoring Status
+
+The labs and the playground in this section are UNTESTED. They were built from documentation and checked only with static tools (`astrona validate`, `bash -n`, YAML parsing).

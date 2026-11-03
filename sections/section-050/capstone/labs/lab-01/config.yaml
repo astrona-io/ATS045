@@ -1,0 +1,62 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Replace A Leaked Client Certificate (LAB). Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-045-capstone-050
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+
+bootstrap:
+  init:
+    - name: seed-cluster
+      description: Create the Starfleet workload and the bindings of the leaked certificate
+      type: file
+      source: bootstrap/01-seed-cluster.sh
+
+testing:
+  init:
+    - name: apply-solution
+      description: Remove the bindings, issue the replacement and write the evidence
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: old-access-removed
+      description: "The leaked certificate has no access through any user or group binding"
+      type: file
+      source: validation/validate-old-access-removed.sh
+      hint: "Delete every binding that names the user fleet-intern or the group fleet-ops. Look at ClusterRoleBindings and RoleBindings in all namespaces. Kubernetes cannot revoke a certificate."
+    - name: replacement-csr-short-lived
+      description: "fleet-intern-2 has an approved client certificate that lasts at most two hours"
+      type: file
+      source: validation/validate-replacement-csr-short-lived.sh
+      hint: "Use signerName kubernetes.io/kube-apiserver-client, expirationSeconds 3600, a subject of CN=fleet-intern-2 and O=interns, and approve the request."
+    - name: replacement-least-privilege
+      description: "fleet-intern-2 can read pods in starfleet and nothing else"
+      type: file
+      source: validation/validate-replacement-least-privilege.sh
+      hint: "Bind the built-in view role with a RoleBinding in starfleet. view does not include Secrets, and a RoleBinding limits it to one namespace. This role cannot delete pods."
+    - name: pki-evidence
+      description: "pki-evidence holds the CA fingerprint, the API server expiry and the chain result"
+      type: file
+      source: validation/validate-pki-evidence.sh
+      hint: "Run openssl verify -CAfile ca.crt apiserver.crt on the node and store the word after the last colon."
+    - name: fleet-intact
+      description: "scout still runs, the auditors binding stays and no admin shortcut was added"
+      type: file
+      source: validation/validate-fleet-intact.sh
+      hint: "Remove only the bindings of the leaked user and group. Keep fleet-auditors-view."
+
+teardown:
+  keepCluster: false

@@ -1,5 +1,5 @@
 version: 1
-approval: KCSA-LESSON-PLAN.md approved; reading-only correction 2026-10-11
+approval: KCSA-LESSON-PLAN.md approved; labs and playgrounds approved by maintainer 2026-11-03
 course:
   id: ATS045
   certification:
@@ -17,10 +17,10 @@ course:
     - Connectivity
     - Admission Control
 defaults:
-  playground: false
-  module_lab: false
-  capstone: false
-  section_quiz: false
+  playground: true
+  module_lab: true
+  capstone: true
+  section_quiz: true
   final_quiz: true
 sections:
 - id: section-010
@@ -37,11 +37,11 @@ sections:
     outline:
     - Artifact Evidence And Sensitive Build Inputs
     - Connecting Verification To Execution Policy
-    playground: false
-    module_lab: false
+    playground: true
+    module_lab: true
     diagrams: []
-  capstone: false
-  section_quiz: false
+  capstone: true
+  section_quiz: true
 - id: section-020
   title: Image Repository
   curriculum_item: Image Repository
@@ -56,10 +56,10 @@ sections:
     outline:
     - Image References And Stored Layers
     - Protecting Publishers, Readers And Repository State
-    playground: false
-    module_lab: false
+    playground: true
+    module_lab: true
     diagrams: []
-  capstone: false
+  capstone: true
   section_quiz: true
 - id: section-030
   title: Observability
@@ -75,11 +75,11 @@ sections:
     outline:
     - Collection, Storage And Observation Limits
     - Security Signals Across Different Boundaries
-    playground: false
-    module_lab: false
+    playground: true
+    module_lab: true
     diagrams: []
-  capstone: false
-  section_quiz: false
+  capstone: true
+  section_quiz: true
 - id: section-040
   title: Service Mesh
   curriculum_item: Service Mesh
@@ -93,11 +93,11 @@ sections:
     - Identify residual application and retry requirements.
     outline:
     - Transport Protection And Mesh Limits
-    playground: false
-    module_lab: false
+    playground: true
+    module_lab: true
     diagrams: []
-  capstone: false
-  section_quiz: false
+  capstone: true
+  section_quiz: true
 - id: section-050
   title: PKI
   curriculum_item: PKI
@@ -111,10 +111,10 @@ sections:
     - Describe rotation and compromise recovery for certificate-based identities.
     outline:
     - PKI Trust And Certificate Verification
-    playground: false
-    module_lab: false
+    playground: true
+    module_lab: true
     diagrams: []
-  capstone: false
+  capstone: true
   section_quiz: true
 - id: section-060
   title: Connectivity
@@ -129,11 +129,11 @@ sections:
     - Identify required dependencies and controlled exceptions.
     outline:
     - Designing Allowed Paths Without Implicit Trust
-    playground: false
-    module_lab: false
+    playground: true
+    module_lab: true
     diagrams: []
-  capstone: false
-  section_quiz: false
+  capstone: true
+  section_quiz: true
 - id: section-070
   title: Admission Control
   curriculum_item: Admission Control
@@ -147,9 +147,9 @@ sections:
     - Identify extension credentials, transport and availability requirements.
     outline:
     - Admission As A Controlled Resource Decision
-    playground: false
-    module_lab: false
+    playground: true
+    module_lab: true
     diagrams: []
-  capstone: false
+  capstone: true
   section_quiz: true
 assessment_format: YAML question banks, schema version 1; indexed in assessments/index.yaml

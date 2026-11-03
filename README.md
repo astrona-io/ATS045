@@ -8,19 +8,19 @@ Concept lessons explain each official objective through concrete examples, diagr
 
 | Section | Objective | Modules | Status |
 | --- | --- | --- | --- |
-| 010 | Supply Chain Security | 1 | Written; review pending |
-| 020 | Image Repository | 1 | Written; review pending |
-| 030 | Observability | 1 | Written; review pending |
-| 040 | Service Mesh | 1 | Written; review pending |
-| 050 | PKI | 1 | Written; review pending |
-| 060 | Connectivity | 1 | Written; review pending |
-| 070 | Admission Control | 1 | Written; review pending |
+| 010 | Supply Chain Security | 1 | Built; labs untested, review pending |
+| 020 | Image Repository | 1 | Built; labs untested, review pending |
+| 030 | Observability | 1 | Built; labs untested, review pending |
+| 040 | Service Mesh | 1 | Built; labs untested, review pending |
+| 050 | PKI | 1 | Built; labs untested, review pending |
+| 060 | Connectivity | 1 | Built; labs untested, review pending |
+| 070 | Admission Control | 1 | Built; labs untested, review pending |
 
 See [the curriculum map](CURRICULUM.md) for module outcomes. The manifest registers readings in teaching order.
 
 ## Authoring Status
 
-First content draft for review. No labs or playgrounds are included. No Kubernetes cluster is needed to read this course. Technical sections and the ATP009 registration remain draft until the maintainer approves publication.
+First content draft for review. Each section has a playground, a graded module lab, a capstone lab and a quiz; all labs and playgrounds are UNTESTED (static checks only). A kind cluster and the astrona tool are needed for the hands-on parts. Technical sections and the ATP009 registration remain draft until the maintainer approves publication.
 
 ## Sources And Contributions
 

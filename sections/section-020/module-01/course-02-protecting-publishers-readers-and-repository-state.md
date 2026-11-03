@@ -5,39 +5,88 @@ exam_objectives:
 ---
 # Protecting Publishers, Readers And Repository State
 
-An artifact repository is a trust boundary between the build process and the runtime that downloads software. A registry can store container images and related artifacts. Its access rules determine who can publish, retrieve, replace or delete content. These permissions have different confidentiality, integrity and availability consequences.
+A registry is a server with state: images, tags and the credentials that change them. Protecting it means answering four questions. Who proves their identity? What may each identity do? Which state may be deleted or overwritten? How long is old content kept? This part answers each question for the private registry in the playground and for registries in general.
 
-## Publisher And Consumer Identities
+## Authentication and authorization at a registry
 
-A build identity may need to push to one repository. A worker needs to pull selected images. A registry administrator can change policy or retention. Combining these roles into one widely shared credential gives every consumer unnecessary publication or management authority.
+The registry in the playground uses HTTP basic authentication with a password file. Authentication proves who is calling. Authorization decides what that caller may do. The open source `registry` image has authentication but only coarse authorization: every valid user can push and pull. Hosted registries and enterprise registries add authorization: a user, group or robot account receives separate permissions per repository, for example pull, push or delete.
 
-Scope credentials to the repository and operation required. Protect them in automation and node configuration, and avoid embedding them in the image they retrieve. Rotation must coordinate the issuer and consumers so new pulls continue while old authority is removed.
+First see what the registry says to a caller without credentials. Run the request from the `shuttle` pod and print the response headers:
 
-A private registry protects access through its configured rules, but it does not prove every published artifact is safe. A compromised authorized publisher can upload harmful content through a valid application programming interface (API). Image verification and controlled promotion address that additional boundary.
+<!-- astrona:playground:renew -->
 
-## Tags, Digests And Promotion
+```sh
+kubectl -n starfleet exec deploy/shuttle -- curl -s -i http://registry.registry.svc.cluster.local:5000/v2/
+```
 
-A tag is a mutable reference unless repository policy adds a restriction. A digest identifies content. An approved release should remain traceable to its content even if a human-readable tag later changes. Protecting tag updates or requiring digest-based deployment can reduce ambiguity in the release chain.
+The status line is `401 Unauthorized`. A `Www-Authenticate` header names the authentication scheme and the realm. This is the answer a container runtime also receives when it pulls a private image without credentials. Now repeat the call with the `puller` account:
 
-Deletion and retention can affect future scheduling. Existing nodes may have cached an image while replacements cannot retrieve it after cleanup. A service can therefore appear healthy until a rollout or node failure reveals missing artifact availability. Retention should preserve required release and recovery artifacts according to policy.
+```sh
+kubectl -n starfleet exec deploy/shuttle -- curl -s -i -u puller:pull-pass-7 http://registry.registry.svc.cluster.local:5000/v2/
+```
 
-A multi-platform artifact needs variants compatible with the target nodes. Publishing the intended tag does not guarantee every processor architecture can execute it. That compatibility issue is distinct from repository permission or vulnerability evidence.
+The status line is `200 OK`. The difference between the two calls is the only thing that Kubernetes pull Secrets provide: they let the node send the `Authorization` header.
 
-## Sensitive Layers And Copies
+## Push, pull and delete are different rights
 
-Image layers can retain files included during earlier build steps. Removing a credential from a later visible filesystem view does not guarantee the distributed layers never contained it. The build must avoid introducing the secret or use a supported protected input mechanism that does not preserve it in the final artifact.
+A registry exposes three kinds of rights. Pull reads manifests and layers. Push writes layers and manifests and moves tags. Delete removes manifests or tags. A role-based registry lets you grant them separately, and a good design follows the work each identity does.
 
-Repository replicas, backups and exported archives are additional copies. Access and retention should match the artifact's sensitivity. Source packages and diagnostic build outputs can also contain internal configuration or credentials even when the final runtime image does not.
+| Identity | Needs | Reason |
+| --- | --- | --- |
+| Build pipeline | Push to its own repositories | It publishes new images |
+| Cluster nodes and pods | Pull from the repositories they run | They only read |
+| Release engineers | Delete, in a controlled process | They clean up old images |
+| Developers | Pull, sometimes push to a test project | They need to test, not to publish production images |
 
-## A Compromised Publisher Scenario
+In the playground, `publisher` and `puller` both authenticate, but this registry does not separate their rights. That is a limit of the software, and the lesson is to choose a registry that supports separate rights and use pull-only credentials for the cluster. A pull credential that can also push turns a stolen node credential into a way to replace the image.
 
-If a publication credential is exposed, determine which repositories and operations it permitted. Examine artifacts and tag changes during the relevant interval, relate them to deployments and revoke the credential. A new valid credential does not remove already published unwanted content or reset workloads that downloaded it.
+## Retention and deletion
 
-Restore reviewed artifacts and verify consumers use the intended digests. Consider both integrity and availability: indiscriminately deleting every image can break legitimate recovery while leaving another exposed identity untouched. Scope the response to evidence and the repository's authority model.
+A registry keeps content until someone removes it. Three kinds of state grow: old tags, untagged manifests that remain after a tag moved, and blobs that no manifest references. Retention rules decide what to keep. A good rule keeps every digest that production ever ran for as long as an investigation might need, and removes old test images.
 
-Repository security therefore includes identities, immutable evidence, retained copies and a reliable retrieval path. A familiar registry URL alone cannot establish the trust of every artifact it serves.
+Deleting an image is two steps in the open source registry. The API removes a manifest by digest only when the registry sets `REGISTRY_STORAGE_DELETE_ENABLED=true`. The blobs stay on disk until the garbage collector runs. Until then, the layers of a deleted image are still stored and a person with the right digests can still fetch them.
+
+Security teams also need the opposite: a way to prevent deletion or overwrite. Tag immutability, supported by many hosted registries, rejects a push that would move an existing tag. Repository retention locks and backups protect the evidence needed after an incident.
+
+```mermaid
+flowchart TB
+  P["Pipeline"] -->|"push"| R["Registry"]
+  R -->|"stores"| B["Blobs"]
+  N["Node"] -->|"pull"| R
+  E["Engineer"] -->|"delete"| R
+  R -->|"garbage collect"| B
+```
+
+The diagram shows three different actors using three different rights against one registry, and the blobs that remain until garbage collection.
+
+## Transport and exposure
+
+Credentials are only as safe as the connection that carries them. Registry traffic should use TLS, so a network attacker cannot read the `Authorization` header or replace a layer. The playground uses plain HTTP, and it can do so only because the node connects to `localhost`, which container runtimes accept without TLS. A registry reachable across a network needs a certificate that the nodes trust.
+
+A registry should also not be open to the internet without need. Place it on a private network, restrict which networks can reach it, and keep the administrator interface off the public path.
+
+## Watch a pod fail to pull
+
+The `scout` Deployment uses `localhost:30500/starfleet/podinfo:6.15.0` and has no pull Secret. List its pod:
+
+```sh
+kubectl -n starfleet get pods -l app=scout
+```
+
+The pod does not become ready. Its status shows `ErrImagePull` and then `ImagePullBackOff`. Read the events to find the reason:
+
+```sh
+kubectl -n starfleet describe pod -l app=scout
+```
+
+The `Events` section contains a `Failed` event from the kubelet. Its message reports that the pull failed because the registry refused the request as unauthorized. The kubelet does not give up: it retries with a growing delay, and that delay is the `BackOff` in the status.
+
+The pod specification is correct and the registry is healthy. The only missing piece is the credential, which is the next piece to add.
 
 ## Common pitfalls
 
 > [!WARNING]
-> Pull access does not require push authority, and a private registry is not an image safety guarantee. Cleanup and hidden layer contents can affect recovery and confidentiality separately.
+> - Using one registry account for the build pipeline and for every node.
+> - Assuming that deleting a tag removes the layers. They remain until garbage collection.
+> - Sending registry credentials over plain HTTP across a real network.
+> - Leaving a registry open to anyone who can reach the cluster network.

@@ -1,0 +1,242 @@
+# Knowledge check for section 060. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats045-060
+course_id: ATS045
+exam_code: KCSA
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-060
+  title: "Connectivity"
+questions:
+  - id: ats045-060-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Place where TLS ends"
+    source_readings:
+      - sections/section-060/module-01/course-01-ingress-paths-and-where-encryption-stops.md
+    prompt: "An entry component terminates TLS and forwards plain HTTP to the pod. Where can the request be read?"
+    options:
+      - id: a
+        text: "On the network between the entry component and the pod."
+        explanation: "Correct. Termination decrypts the request, and the next hop has no encryption."
+      - id: b
+        text: "Only in the browser of the client."
+        explanation: "The client sees its own request, but the next hop carries it in plain text."
+      - id: c
+        text: "Nowhere, because the browser shows a padlock."
+        explanation: "The padlock covers only the first connection."
+      - id: d
+        text: "Only inside the pod after it is decrypted again."
+        explanation: "Nothing encrypts the second hop in this design."
+    correct_option: a
+    explanation: "Correct. Termination decrypts the request, and the next hop has no encryption."
+
+  - id: ats045-060-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain the Service rewrite"
+    source_readings:
+      - sections/section-060/module-01/course-01-ingress-paths-and-where-encryption-stops.md
+    prompt: "A Service listens on port 80 with `targetPort` 9898. On which port does a network plug-in see the connection to the pod?"
+    options:
+      - id: a
+        text: "80, because the client used it."
+        explanation: "The Service rewrites the destination before the policy decision."
+      - id: b
+        text: "Either one, chosen by the policy."
+        explanation: "A policy matches one fixed value, and it is the container port."
+      - id: c
+        text: "The node port of the Service."
+        explanation: "A node port is a different entry and is not used between pods."
+      - id: d
+        text: "9898, the container port."
+        explanation: "Correct. A policy matches the port after the Service rewrite."
+    correct_option: d
+    explanation: "Correct. A policy matches the port after the Service rewrite."
+
+  - id: ats045-060-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Judge a forwarding header"
+    source_readings:
+      - sections/section-060/module-01/course-01-ingress-paths-and-where-encryption-stops.md
+    prompt: "A pod reads the client address from `X-Forwarded-For` and allows an administrator range. What is the risk?"
+    options:
+      - id: a
+        text: "None, because the header is added by Kubernetes."
+        explanation: "Kubernetes does not add this header. A proxy or a client does."
+      - id: b
+        text: "The header slows down the request."
+        explanation: "Speed is not the issue. Trust in the value is."
+      - id: c
+        text: "A client can write the header itself, so a request that is not cleaned by a trusted proxy can claim any address."
+        explanation: "Correct. Only the value written by a trusted proxy can be believed."
+      - id: d
+        text: "The header is encrypted and cannot be read."
+        explanation: "A header is plain text unless the whole hop is encrypted."
+    correct_option: c
+    explanation: "Correct. Only the value written by a trusted proxy can be believed."
+
+  - id: ats045-060-q04
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain isolation"
+    source_readings:
+      - sections/section-060/module-01/course-02-networkpolicy-mechanics.md
+    prompt: "A pod is selected by one policy that lists `Ingress` and has no rules. What happens to connections to that pod?"
+    options:
+      - id: a
+        text: "All are allowed, because the policy has no rules."
+        explanation: "A selected pod accepts only what some rule allows."
+      - id: b
+        text: "All are dropped, because the pod is isolated and nothing is allowed."
+        explanation: "Correct. An empty rule list allows no incoming connection."
+      - id: c
+        text: "Only connections from the same namespace are allowed."
+        explanation: "Namespaces are not treated as allowed without a rule."
+      - id: d
+        text: "Only connections from the Service are allowed."
+        explanation: "The Service rewrites the address, and the policy still decides."
+    correct_option: b
+    explanation: "Correct. An empty rule list allows no incoming connection."
+
+  - id: ats045-060-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Combine policies"
+    source_readings:
+      - sections/section-060/module-01/course-02-networkpolicy-mechanics.md
+    prompt: "Two policies select the same pod. One allows `shuttle` and the other allows `drifter`. Who can connect?"
+    options:
+      - id: a
+        text: "Both `shuttle` and `drifter`, because the allowed paths are added together."
+        explanation: "Correct. The result is the union of all rules."
+      - id: b
+        text: "Nobody, because the policies conflict."
+        explanation: "Policies do not conflict. There is no deny rule."
+      - id: c
+        text: "Only the client of the first policy created."
+        explanation: "The order of policies does not matter."
+      - id: d
+        text: "Only the client in the namespace with the first label."
+        explanation: "Creation order and names do not decide."
+    correct_option: a
+    explanation: "Correct. The result is the union of all rules."
+
+  - id: ats045-060-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read selectors"
+    source_readings:
+      - sections/section-060/module-01/course-02-networkpolicy-mechanics.md
+    prompt: "A `from` list has one item with a `namespaceSelector` for `ops` and a `podSelector` for `app=collector` in the same item. Which pods match?"
+    options:
+      - id: a
+        text: "Every pod in `ops` and every pod labelled `app=collector` in the policy namespace."
+        explanation: "That is the result of two separate items, combined with OR."
+      - id: b
+        text: "Every pod in the cluster."
+        explanation: "An item with selectors never matches every pod."
+      - id: c
+        text: "Only the pod named `collector`."
+        explanation: "The selector matches labels and not names."
+      - id: d
+        text: "Only pods labelled `app=collector` in the namespace `ops`."
+        explanation: "Correct. Two selectors in one item are combined with AND."
+    correct_option: d
+    explanation: "Correct. Two selectors in one item are combined with AND."
+
+  - id: ats045-060-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Diagnose a DNS failure"
+    source_readings:
+      - sections/section-060/module-01/course-02-networkpolicy-mechanics.md
+    prompt: "After an egress policy, `curl http://scout.starfleet/` from `shuttle` fails with exit code 6 and a request to the pod address works. What is missing?"
+    options:
+      - id: a
+        text: "An ingress rule on `scout`."
+        explanation: "The request by address works, so the ingress rule exists."
+      - id: b
+        text: "A change of the Service port."
+        explanation: "The Service port is not the cause of a lookup failure."
+      - id: c
+        text: "An egress rule that allows UDP and TCP port 53 to CoreDNS."
+        explanation: "Correct. Exit code 6 is a failed lookup, and the lookup needs its own rule."
+      - id: d
+        text: "A longer timeout."
+        explanation: "The failure is a missing rule and not a slow answer."
+    correct_option: c
+    explanation: "Correct. Exit code 6 is a failed lookup, and the lookup needs its own rule."
+
+  - id: ats045-060-q08
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Identify a policy with no effect"
+    source_readings:
+      - sections/section-060/module-01/course-02-networkpolicy-mechanics.md
+    prompt: "A namespace has a default-deny policy, but every pod can still reach every other pod. What is the most likely cause?"
+    options:
+      - id: a
+        text: "Kubernetes ignores policies in namespaces with Services."
+        explanation: "Services do not disable policies."
+      - id: b
+        text: "The network plug-in does not enforce NetworkPolicy, so the object is stored and has no effect."
+        explanation: "Correct. Enforcement belongs to the plug-in. A test from a pod shows the result."
+      - id: c
+        text: "The policy needs a label on the namespace."
+        explanation: "A policy applies to its own namespace without a label."
+      - id: d
+        text: "The policy needs a Service account."
+        explanation: "A policy does not use a Service account."
+    correct_option: b
+    explanation: "Correct. Enforcement belongs to the plug-in. A test from a pod shows the result."
+
+  - id: ats045-060-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Name the protection of a management port"
+    source_readings:
+      - sections/section-060/module-01/course-03-management-paths-and-verifying-a-policy.md
+    prompt: "What protects the kubelet port 10250 in a kubeadm cluster, and what does a pod policy do for it?"
+    options:
+      - id: a
+        text: "Authentication and authorization at the port, plus limits on where the node network is reachable. A pod policy does not select it."
+        explanation: "Correct. A request with no credential gets 401."
+      - id: b
+        text: "A pod policy in the namespace of the pod selects the port and protects it."
+        explanation: "Policies select pods. The kubelet runs on the node."
+      - id: c
+        text: "Nothing. The port is open to every caller."
+        explanation: "The kubelet rejects anonymous requests by default in kubeadm."
+      - id: d
+        text: "The Service of the kubelet."
+        explanation: "The kubelet has no Service."
+    correct_option: a
+    explanation: "Correct. A request with no credential gets 401."
+
+  - id: ats045-060-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Verify from the right source"
+    source_readings:
+      - sections/section-060/module-01/course-03-management-paths-and-verifying-a-policy.md
+    prompt: "Why does a request from `kubectl port-forward` not prove that a policy blocks a path?"
+    options:
+      - id: a
+        text: "Because port-forward is always blocked."
+        explanation: "It is not blocked by default."
+      - id: b
+        text: "Because port-forward uses UDP."
+        explanation: "It uses TCP."
+      - id: c
+        text: "Because port-forward ignores labels."
+        explanation: "Labels are not the issue. The path is."
+      - id: d
+        text: "Because the connection is opened by the kubelet inside the pod network namespace, so the policy path is not used."
+        explanation: "Correct. Test from the affected pod with `kubectl exec`."
+    correct_option: d
+    explanation: "Correct. Test from the affected pod with `kubectl exec`."

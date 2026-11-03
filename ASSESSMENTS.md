@@ -29,3 +29,7 @@ ID, not display position, so a later renderer can shuffle choices safely.
 
 The banks contain answer keys and are public learning material, so this is not
 a secure examination bank. Do not treat scores as an official KCSA result.
+
+## Section quizzes
+
+Each section also has a `quiz.yaml` with 10 questions, registered in `astrona.yaml` as `type: quiz` with `pass_score: 70`. `sections/final-domain-quiz.yaml` holds 14 questions taken from the section quizzes (two per section) and closes the domain. These quiz files are the assessments that learners take. The banks under `assessments/` and `sections/*/questions.yaml` stay as practice data.

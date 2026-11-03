@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Mesh Identity, mTLS And Certificates (PLAYGROUND). A clean sandbox: no task, no grading, no `astrona submit`.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-045-playground-040-01
+  docs:
+    guide: docs/overview.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - mccutchen/go-httpbin:2.25.0
+      - curlimages/curl:8.22.0
+      - docker.io/istio/pilot:1.31.1
+      - docker.io/istio/proxyv2:1.31.1
+
+bootstrap:
+  init:
+    - name: prepare
+      description: "Install istioctl 1.31.1 and the Istio control plane (minimal profile), then apply the Starfleet workloads"
+      type: file
+      source: bootstrap/prepare.sh
+
+teardown:
+  keepCluster: false

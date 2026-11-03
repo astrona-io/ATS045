@@ -1,0 +1,365 @@
+# Final domain knowledge check across all seven sections.
+schema_version: 1
+kind: question_bank
+id: ats045-final
+course_id: ATS045
+exam_code: KCSA
+status: draft
+provenance: Original practice material written for this course; not official exam
+  questions.
+scope:
+  type: domain
+  id: platform-security
+  title: Platform Security
+questions:
+- id: ats045-final-q01
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Read the digest of a running container
+  source_readings:
+  - sections/section-010/module-01/course-01-artifact-evidence-and-sensitive-build-inputs.md
+  prompt: Which field of a pod shows the digest of the image that the container runtime
+    actually pulled?
+  options:
+  - id: a
+    text: "`spec.containers[].image`"
+    explanation: This field holds the requested reference, which may be only a tag.
+  - id: b
+    text: "`metadata.labels`"
+    explanation: Labels are free text and do not report image content.
+  - id: c
+    text: "`status.containerStatuses[].imageID`"
+    explanation: Correct. The pod status reports the resolved image identity, ending
+      in `@sha256:` and the digest.
+  - id: d
+    text: "`spec.imagePullSecrets`"
+    explanation: This field names credentials for pulling, not the image content.
+  correct_option: c
+  explanation: Correct. The pod status reports the resolved image identity, ending
+    in `@sha256:` and the digest.
+- id: ats045-final-q02
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Move a credential from an environment variable to a mounted
+    Secret
+  source_readings:
+  - sections/section-010/module-01/course-03-credentials-and-service-account-tokens.md
+  prompt: Why is a Secret mounted as a file preferred over an environment variable
+    for a database password?
+  options:
+  - id: a
+    text: A mounted Secret is encrypted by the kubelet.
+    explanation: The mounted file holds the plain value for the process.
+  - id: b
+    text: The value is not in the process environment, in `describe` output or in
+      the Deployment manifest.
+    explanation: Correct. The manifest holds only the reference to the Secret, and
+      child processes do not inherit a file.
+  - id: c
+    text: Environment variables cannot be read by the application.
+    explanation: Applications read environment variables normally.
+  - id: d
+    text: Files are never visible to other containers in the pod.
+    explanation: A volume can be mounted into several containers if the pod lists
+      it for them.
+  correct_option: b
+  explanation: Correct. The manifest holds only the reference to the Secret, and child
+    processes do not inherit a file.
+- id: ats045-final-q03
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Distinguish authentication from authorization at a registry
+  source_readings:
+  - sections/section-020/module-01/course-02-protecting-publishers-readers-and-repository-state.md
+  prompt: The in-cluster registry in this section uses an htpasswd file. What does
+    it enforce?
+  options:
+  - id: a
+    text: Separate read and write rights for each account.
+    explanation: Per-repository or per-action rights need a registry with an authorization
+      layer.
+  - id: b
+    text: Signature verification of pushed images.
+    explanation: Signatures need extra tooling and are not part of htpasswd.
+  - id: c
+    text: Authentication only. Any valid account can push, pull and delete.
+    explanation: Correct. htpasswd proves who the caller is but does not limit what
+      that account may do.
+  - id: d
+    text: Encryption of the stored blobs.
+    explanation: htpasswd does not encrypt stored data.
+  correct_option: c
+  explanation: Correct. htpasswd proves who the caller is but does not limit what
+    that account may do.
+- id: ats045-final-q04
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Predict the effect of imagePullPolicy
+  source_readings:
+  - sections/section-020/module-01/course-03-pull-secrets-and-pull-policy.md
+  prompt: 'A node already holds a layer set for `localhost:30500/starfleet/podinfo:6.15.0`.
+    The pod uses `imagePullPolicy: IfNotPresent` and the pull Secret is revoked. What
+    happens?'
+  options:
+  - id: a
+    text: The pod fails with ImagePullBackOff.
+    explanation: No pull is attempted when the image is already on the node.
+  - id: b
+    text: The pod starts from the cached image, so the revocation is not noticed.
+    explanation: Correct. Only `Always` forces a registry check and proves access
+      on every start.
+  - id: c
+    text: The kubelet deletes the cached image.
+    explanation: The kubelet does not delete images on credential errors.
+  - id: d
+    text: The pod stays Pending.
+    explanation: The pod can be scheduled and started.
+  correct_option: b
+  explanation: Correct. Only `Always` forces a registry check and proves access on
+    every start.
+- id: ats045-final-q05
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Apply first-match rule order
+  source_readings:
+  - sections/section-030/module-01/course-01-audit-policy-rules-levels-and-stages.md
+  prompt: A policy has a rule that sets `None` for all `get`, `list` and `watch` requests
+    above a rule that sets `Metadata` for Secrets. A caller reads a Secret. What is
+    recorded?
+  options:
+  - id: a
+    text: An event at level `Metadata`.
+    explanation: That rule is never reached for a read, because an earlier rule already
+      matched.
+  - id: b
+    text: An event at level `RequestResponse`.
+    explanation: No rule gives this level.
+  - id: c
+    text: Nothing, because the first matching rule gives `None`.
+    explanation: Correct. The first matching rule applies, so the read rule hides
+      Secret reads.
+  - id: d
+    text: Two events, one per rule.
+    explanation: Rules are never combined.
+  correct_option: c
+  explanation: Correct. The first matching rule applies, so the read rule hides Secret
+    reads.
+- id: ats045-final-q06
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Explain what retention flags do
+  source_readings:
+  - sections/section-030/module-01/course-02-enable-audit-logging-and-read-events.md
+  prompt: A cluster sets `--audit-log-maxage=7` and `--audit-log-maxbackup=3`. What
+    is the effect?
+  options:
+  - id: a
+    text: The log is encrypted for 7 days.
+    explanation: The flags do not encrypt.
+  - id: b
+    text: Events older than 7 days and files beyond three rotated copies are removed.
+    explanation: Correct. The flags limit age and number, so older evidence no longer
+      exists.
+  - id: c
+    text: Only three users can read the log.
+    explanation: The flags do not control access.
+  - id: d
+    text: The API server keeps three copies of every event.
+    explanation: The flags control rotated files, not copies of events.
+  correct_option: b
+  explanation: Correct. The flags limit age and number, so older evidence no longer
+    exists.
+- id: ats045-final-q07
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Describe certificate issuance
+  source_readings:
+  - sections/section-040/module-01/course-01-mesh-identity-and-certificates.md
+  prompt: How does a sidecar obtain its certificate?
+  options:
+  - id: a
+    text: It copies a Secret that holds the private key.
+    explanation: The key is generated inside the pod and no Secret holds it.
+  - id: b
+    text: The API server signs it when the pod is created.
+    explanation: The certificate authority in `istiod` signs it, not the API server.
+  - id: c
+    text: It generates a key, sends a signing request with its service account token
+      to `istiod`, and receives a signed certificate.
+    explanation: Correct. `istiod` validates the token and signs the identity that
+      it names.
+  - id: d
+    text: The application requests it over HTTP.
+    explanation: The proxy agent requests it.
+  correct_option: c
+  explanation: Correct. `istiod` validates the token and signs the identity that it
+    names.
+- id: ats045-final-q08
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Predict allow-policy behavior
+  source_readings:
+  - sections/section-040/module-01/course-03-authorization-and-mesh-limits.md
+  prompt: A workload has no policy. You add one `ALLOW` policy with a rule for GET
+    from `sa/shuttle`. What happens to a request from another service account?
+  options:
+  - id: a
+    text: It is still allowed, because ALLOW only adds permissions.
+    explanation: Once an ALLOW policy selects the workload, unlisted requests are
+      denied.
+  - id: b
+    text: It is denied with `403`.
+    explanation: Correct. Requests that match no rule of an ALLOW policy are denied.
+  - id: c
+    text: It is redirected to `shuttle`.
+    explanation: Policy does not redirect requests.
+  - id: d
+    text: It is logged and allowed.
+    explanation: That would need an AUDIT action, and AUDIT does not deny.
+  correct_option: b
+  explanation: Correct. Requests that match no rule of an ALLOW policy are denied.
+- id: ats045-final-q09
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Diagnose a name failure
+  source_readings:
+  - sections/section-050/module-01/course-01-keys-certificates-and-chain-verification.md
+  prompt: A client connects to the API server through a name that is missing from
+    the SAN list. The chain is valid. What happens?
+  options:
+  - id: a
+    text: The connection succeeds, because the chain is valid.
+    explanation: The name check is a separate verification step.
+  - id: b
+    text: The server regenerates its certificate.
+    explanation: Servers do not change certificates on request.
+  - id: c
+    text: Verification fails, because the certificate is not valid for that name.
+    explanation: Correct. A valid chain does not replace the name check.
+  - id: d
+    text: The client falls back to a trust store.
+    explanation: A client does not widen trust after a failure.
+  correct_option: c
+  explanation: Correct. A valid chain does not replace the name check.
+- id: ats045-final-q10
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Explain missing revocation
+  source_readings:
+  - sections/section-050/module-01/course-03-rotation-expiry-and-compromise.md
+  prompt: A user's client certificate leaked. The `CertificateSigningRequest` object
+    for it is deleted. What happens to the certificate?
+  options:
+  - id: a
+    text: It stops working immediately.
+    explanation: The API server does not look up the request object.
+  - id: b
+    text: It still authenticates until it expires, because the API server checks the
+      signature, chain and time only.
+    explanation: Correct. Deleting the object does not invalidate the signed file.
+  - id: c
+    text: It is moved to a revocation list.
+    explanation: The API server has no revocation list for client certificates.
+  - id: d
+    text: It becomes valid only for `system:masters`.
+    explanation: The subject does not change.
+  correct_option: b
+  explanation: Correct. Deleting the object does not invalidate the signed file.
+- id: ats045-final-q11
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Judge a forwarding header
+  source_readings:
+  - sections/section-060/module-01/course-01-ingress-paths-and-where-encryption-stops.md
+  prompt: A pod reads the client address from `X-Forwarded-For` and allows an administrator
+    range. What is the risk?
+  options:
+  - id: a
+    text: None, because the header is added by Kubernetes.
+    explanation: Kubernetes does not add this header. A proxy or a client does.
+  - id: b
+    text: The header slows down the request.
+    explanation: Speed is not the issue. Trust in the value is.
+  - id: c
+    text: A client can write the header itself, so a request that is not cleaned by
+      a trusted proxy can claim any address.
+    explanation: Correct. Only the value written by a trusted proxy can be believed.
+  - id: d
+    text: The header is encrypted and cannot be read.
+    explanation: A header is plain text unless the whole hop is encrypted.
+  correct_option: c
+  explanation: Correct. Only the value written by a trusted proxy can be believed.
+- id: ats045-final-q12
+  type: single_choice
+  difficulty: advanced
+  learning_objective: Identify a policy with no effect
+  source_readings:
+  - sections/section-060/module-01/course-02-networkpolicy-mechanics.md
+  prompt: A namespace has a default-deny policy, but every pod can still reach every
+    other pod. What is the most likely cause?
+  options:
+  - id: a
+    text: Kubernetes ignores policies in namespaces with Services.
+    explanation: Services do not disable policies.
+  - id: b
+    text: The network plug-in does not enforce NetworkPolicy, so the object is stored
+      and has no effect.
+    explanation: Correct. Enforcement belongs to the plug-in. A test from a pod shows
+      the result.
+  - id: c
+    text: The policy needs a label on the namespace.
+    explanation: A policy applies to its own namespace without a label.
+  - id: d
+    text: The policy needs a Service account.
+    explanation: A policy does not use a Service account.
+  correct_option: b
+  explanation: Correct. Enforcement belongs to the plug-in. A test from a pod shows
+    the result.
+- id: ats045-final-q13
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Use a dry run
+  source_readings:
+  - sections/section-070/module-01/course-01-the-admission-chain-and-built-in-controllers.md
+  prompt: Which command tells you whether admission would accept an object, without
+    storing it?
+  options:
+  - id: a
+    text: "`kubectl apply --dry-run=client -f pod.yaml`"
+    explanation: A client-side dry run never reaches the API server.
+  - id: b
+    text: "`kubectl get -f pod.yaml`"
+    explanation: A read is not admitted.
+  - id: c
+    text: "`kubectl apply --dry-run=server -f pod.yaml`"
+    explanation: Correct. It runs every stage except the write to etcd.
+  - id: d
+    text: "`kubectl diff` with no file"
+    explanation: It needs an object, and it is not the check for a rule.
+  correct_option: c
+  explanation: Correct. It runs every stage except the write to etcd.
+- id: ats045-final-q14
+  type: single_choice
+  difficulty: advanced
+  learning_objective: Judge a failure policy
+  source_readings:
+  - sections/section-070/module-01/course-03-admission-webhooks-failure-and-exceptions.md
+  prompt: 'A validating webhook uses `failurePolicy: Ignore`, and its service is down.
+    What is the effect on matching requests?'
+  options:
+  - id: a
+    text: They are rejected, so the cluster is safe.
+    explanation: That is Fail.
+  - id: b
+    text: They are admitted without the check of that webhook.
+    explanation: Correct. Ignore keeps the cluster working and drops the rule while
+      the service is down.
+  - id: c
+    text: They wait until the service returns.
+    explanation: The call ends at the timeout.
+  - id: d
+    text: They are sent to another webhook.
+    explanation: The API server does not fall back to another webhook.
+  correct_option: b
+  explanation: Correct. Ignore keeps the cluster working and drops the rule while
+    the service is down.

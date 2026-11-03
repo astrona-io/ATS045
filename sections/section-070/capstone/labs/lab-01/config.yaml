@@ -1,0 +1,63 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Close The Admission Gaps In Starfleet (LAB). Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-045-capstone-070
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - curlimages/curl:8.22.0
+
+bootstrap:
+  init:
+    - name: seed-cluster
+      description: Create the Starfleet workloads and the existing admission controls
+      type: file
+      source: bootstrap/01-seed-cluster.sh
+
+testing:
+  init:
+    - name: apply-solution
+      description: Fix the namespace label and the binding
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: psa-restricted
+      description: "starfleet enforces the Pod Security restricted level"
+      type: file
+      source: validation/validate-psa-restricted.sh
+      hint: "Read the labels of the namespace with kubectl get namespace starfleet --show-labels. The enforce level is baseline."
+    - name: image-tags-denied
+      description: "A Deployment with the latest tag is rejected in starfleet"
+      type: file
+      source: validation/validate-image-tags-denied.sh
+      hint: "The policy image-tags exists. Read its binding: the action and the namespace selector decide whether it applies."
+    - name: scope-limited
+      description: "outpost is not covered"
+      type: file
+      source: validation/validate-scope-limited.sh
+      hint: "Select starfleet only. Do not label outpost and do not widen the selector."
+    - name: policy-hygiene
+      description: "The binding denies, no policy ignores failures and the enforce label is restricted"
+      type: file
+      source: validation/validate-policy-hygiene.sh
+      hint: "Use validationActions Deny and leave failurePolicy at Fail."
+    - name: workloads-unchanged
+      description: "The workloads still run with their pinned image"
+      type: file
+      source: validation/validate-workloads-unchanged.sh
+      hint: "Fix this with admission objects only."
+
+teardown:
+  keepCluster: false

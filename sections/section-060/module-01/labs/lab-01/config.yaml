@@ -1,0 +1,64 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Isolate A Namespace And Allow One Path (LAB). Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-045-lab-060-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - mccutchen/go-httpbin:2.25.0
+      - curlimages/curl:8.22.0
+
+bootstrap:
+  init:
+    - name: seed-cluster
+      description: Create the Starfleet workloads
+      type: file
+      source: bootstrap/01-seed-cluster.sh
+
+testing:
+  init:
+    - name: apply-solution
+      description: Apply the NetworkPolicy resources
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: default-deny-ingress
+      description: "Pods in starfleet are isolated for ingress"
+      type: file
+      source: validation/validate-default-deny-ingress.sh
+      hint: "Create a NetworkPolicy with an empty podSelector and policyTypes Ingress, and no ingress rules. It isolates every pod in the namespace."
+    - name: shuttle-reaches-scout
+      description: "shuttle reaches scout by name on the application port"
+      type: file
+      source: validation/validate-shuttle-reaches-scout.sh
+      hint: "Add a policy for pods app=scout that allows ingress from pods app=shuttle on TCP 9898. Use the container port, not the Service port 80."
+    - name: shuttle-egress-restricted
+      description: "shuttle reaches only scout, and DNS still works"
+      type: file
+      source: validation/validate-shuttle-egress-restricted.sh
+      hint: "Add an Egress policy for app=shuttle. Allow UDP and TCP 53 to the kube-dns pods in kube-system, and TCP 9898 to scout. Without the DNS rule the name does not resolve."
+    - name: no-wildcard-policy
+      description: "No policy allows every source or destination and the default deny stays"
+      type: file
+      source: validation/validate-no-wildcard-policy.sh
+      hint: "Do not delete the default-deny policy and do not use an empty from, an empty namespaceSelector alone or 0.0.0.0/0."
+    - name: workloads-unchanged
+      description: "The workloads still run and none uses the host network"
+      type: file
+      source: validation/validate-workloads-unchanged.sh
+      hint: "Fix the network with policies. Do not change the workloads."
+
+teardown:
+  keepCluster: false

@@ -1,0 +1,63 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Enforce A Pod Standard And Write A Validation Policy (LAB). Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-045-lab-070-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - curlimages/curl:8.22.0
+
+bootstrap:
+  init:
+    - name: seed-cluster
+      description: Create the Starfleet workloads
+      type: file
+      source: bootstrap/01-seed-cluster.sh
+
+testing:
+  init:
+    - name: apply-solution
+      description: Apply the namespace label, policy and binding
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: psa-restricted
+      description: "starfleet enforces the Pod Security restricted level"
+      type: file
+      source: validation/validate-psa-restricted.sh
+      hint: "Label the namespace starfleet with pod-security.kubernetes.io/enforce=restricted. The label is on the namespace, not on the pod."
+    - name: memory-limit-policy
+      description: "A Deployment without a memory limit is rejected in starfleet"
+      type: file
+      source: validation/validate-memory-limit-policy.sh
+      hint: "Create a ValidatingAdmissionPolicy for apps/v1 deployments with a CEL expression on containers, and a binding with the Deny action."
+    - name: scope-limited
+      description: "outpost is not covered"
+      type: file
+      source: validation/validate-scope-limited.sh
+      hint: "Give the binding a namespaceSelector with kubernetes.io/metadata.name=starfleet. Do not label outpost."
+    - name: policy-hygiene
+      description: "The binding denies, no policy ignores failures and the enforce label is restricted"
+      type: file
+      source: validation/validate-policy-hygiene.sh
+      hint: "Use validationActions Deny, leave failurePolicy at Fail, and use the level restricted, not baseline."
+    - name: workloads-unchanged
+      description: "The workloads still run with their pinned image"
+      type: file
+      source: validation/validate-workloads-unchanged.sh
+      hint: "Fix this with admission objects only. Do not change the workloads."
+
+teardown:
+  keepCluster: false

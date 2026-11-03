@@ -1,0 +1,242 @@
+# Knowledge check for section 010. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats045-010
+course_id: ATS045
+exam_code: KCSA
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-010
+  title: "Supply Chain Security"
+questions:
+  - id: ats045-010-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Distinguish a digest, a signature, provenance, an SBOM and a vulnerability scan"
+    source_readings:
+      - sections/section-010/module-01/course-01-artifact-evidence-and-sensitive-build-inputs.md
+    prompt: "Which statement describes what an image signature proves?"
+    options:
+      - id: a
+        text: "A signer approved a specific image digest."
+        explanation: "Correct. A signature binds a signer to a digest. It says nothing about whether the code is free of defects."
+      - id: b
+        text: "The image contains no known vulnerabilities."
+        explanation: "A vulnerability scan answers that question, not a signature."
+      - id: c
+        text: "The image was built from a reviewed commit."
+        explanation: "Provenance describes the build, and only if the build system itself is trusted."
+      - id: d
+        text: "The image contains only the packages in its SBOM."
+        explanation: "An SBOM lists contents but a signature does not verify that list."
+    correct_option: a
+    explanation: "Correct. A signature binds a signer to a digest. It says nothing about whether the code is free of defects."
+
+  - id: ats045-010-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain why a tag is not an identity"
+    source_readings:
+      - sections/section-010/module-01/course-01-artifact-evidence-and-sensitive-build-inputs.md
+    prompt: "A Deployment uses `podinfo:6.15.0`. Why can two pods of that Deployment run different content?"
+    options:
+      - id: a
+        text: "Kubernetes picks a random layer order for each pod."
+        explanation: "Layer order is part of the image manifest and is fixed by its digest."
+      - id: b
+        text: "Tags are limited to one node."
+        explanation: "Tags are registry names and do not depend on nodes."
+      - id: c
+        text: "The kubelet rewrites tags to the latest release."
+        explanation: "The kubelet does not rewrite tags."
+      - id: d
+        text: "The registry owner can move the tag to another digest between pulls."
+        explanation: "Correct. A tag is a movable name in the registry. Only a digest names exact content."
+    correct_option: d
+    explanation: "Correct. A tag is a movable name in the registry. Only a digest names exact content."
+
+  - id: ats045-010-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read the digest of a running container"
+    source_readings:
+      - sections/section-010/module-01/course-01-artifact-evidence-and-sensitive-build-inputs.md
+    prompt: "Which field of a pod shows the digest of the image that the container runtime actually pulled?"
+    options:
+      - id: a
+        text: "`spec.containers[].image`"
+        explanation: "This field holds the requested reference, which may be only a tag."
+      - id: b
+        text: "`metadata.labels`"
+        explanation: "Labels are free text and do not report image content."
+      - id: c
+        text: "`status.containerStatuses[].imageID`"
+        explanation: "Correct. The pod status reports the resolved image identity, ending in `@sha256:` and the digest."
+      - id: d
+        text: "`spec.imagePullSecrets`"
+        explanation: "This field names credentials for pulling, not the image content."
+    correct_option: c
+    explanation: "Correct. The pod status reports the resolved image identity, ending in `@sha256:` and the digest."
+
+  - id: ats045-010-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Relate evidence to the supply chain stage that it protects"
+    source_readings:
+      - sections/section-010/module-01/course-01-artifact-evidence-and-sensitive-build-inputs.md
+    prompt: "An attacker merges malicious code into the main branch through a phished developer account. The pipeline then builds, signs and publishes the image. Which statement is correct?"
+    options:
+      - id: a
+        text: "The signature check at deployment will fail because the code changed."
+        explanation: "The pipeline signed the image legitimately, so the signature is valid."
+      - id: b
+        text: "Every downstream check can pass, because the broken control was before the build."
+        explanation: "Correct. Digest, signature and scan results describe the built artifact. A weakness in source control must be stopped by controls at that boundary."
+      - id: c
+        text: "The vulnerability scan will always detect the new code."
+        explanation: "A scan finds known vulnerabilities, not new malicious logic."
+      - id: d
+        text: "Using tags instead of digests would have prevented it."
+        explanation: "Tags are weaker identities and do not address a compromised source."
+    correct_option: b
+    explanation: "Correct. Digest, signature and scan results describe the built artifact. A weakness in source control must be stopped by controls at that boundary."
+
+  - id: ats045-010-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain where verification can be enforced"
+    source_readings:
+      - sections/section-010/module-01/course-02-connecting-verification-to-execution-policy.md
+    prompt: "A team wants to reject pods whose image signature does not match an approved signer. Which control can do this?"
+    options:
+      - id: a
+        text: "An admission webhook run by a policy engine that fetches and verifies the signature."
+        explanation: "Correct. A webhook can call the registry and verify the signature before the pod is stored."
+      - id: b
+        text: "A validating admission policy written in CEL that reads only the pod specification."
+        explanation: "A CEL policy cannot contact the registry, so it can check the reference form but not a signature."
+      - id: c
+        text: "The `imagePullPolicy: Always` field."
+        explanation: "This field controls when the image is pulled, not who signed it."
+      - id: d
+        text: "A NetworkPolicy on the registry namespace."
+        explanation: "A NetworkPolicy controls traffic, not image identity."
+    correct_option: a
+    explanation: "Correct. A webhook can call the registry and verify the signature before the pod is stored."
+
+  - id: ats045-010-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain the failure behaviour of a verifying webhook"
+    source_readings:
+      - sections/section-010/module-01/course-02-connecting-verification-to-execution-policy.md
+    prompt: "An image verification webhook has `failurePolicy: Ignore` and its pods are down. What happens when a pod is created?"
+    options:
+      - id: a
+        text: "The API server rejects every pod."
+        explanation: "That is the behaviour of `failurePolicy: Fail`."
+      - id: b
+        text: "The kubelet verifies the signature instead."
+        explanation: "The kubelet does not take over a webhook check unless it is configured for that."
+      - id: c
+        text: "The pod stays Pending until the webhook returns."
+        explanation: "Admission is synchronous and does not queue the object."
+      - id: d
+        text: "The API server admits the pod without verification."
+        explanation: "Correct. With `Ignore`, a failed call to the webhook is skipped, so unsigned images pass while the webhook is down."
+    correct_option: d
+    explanation: "Correct. With `Ignore`, a failed call to the webhook is skipped, so unsigned images pass while the webhook is down."
+
+  - id: ats045-010-q07
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Pin a Deployment to a digest"
+    source_readings:
+      - sections/section-010/module-01/course-02-connecting-verification-to-execution-policy.md
+    prompt: "Which image reference is pinned to exact content?"
+    options:
+      - id: a
+        text: "`ghcr.io/stefanprodan/podinfo:latest`"
+        explanation: "`latest` is a tag and can move."
+      - id: b
+        text: "`ghcr.io/stefanprodan/podinfo:6.15.0`"
+        explanation: "A version tag is still a movable name."
+      - id: c
+        text: "`ghcr.io/stefanprodan/podinfo@sha256:` followed by the 64 hexadecimal characters of the digest"
+        explanation: "Correct. A digest reference names the content, and the runtime refuses content with another hash."
+      - id: d
+        text: "`podinfo`"
+        explanation: "Without a tag the runtime uses `latest` on the default registry."
+    correct_option: c
+    explanation: "Correct. A digest reference names the content, and the runtime refuses content with another hash."
+
+  - id: ats045-010-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Move a credential from an environment variable to a mounted Secret"
+    source_readings:
+      - sections/section-010/module-01/course-03-credentials-and-service-account-tokens.md
+    prompt: "Why is a Secret mounted as a file preferred over an environment variable for a database password?"
+    options:
+      - id: a
+        text: "A mounted Secret is encrypted by the kubelet."
+        explanation: "The mounted file holds the plain value for the process."
+      - id: b
+        text: "The value is not in the process environment, in `describe` output or in the Deployment manifest."
+        explanation: "Correct. The manifest holds only the reference to the Secret, and child processes do not inherit a file."
+      - id: c
+        text: "Environment variables cannot be read by the application."
+        explanation: "Applications read environment variables normally."
+      - id: d
+        text: "Files are never visible to other containers in the pod."
+        explanation: "A volume can be mounted into several containers if the pod lists it for them."
+    correct_option: b
+    explanation: "Correct. The manifest holds only the reference to the Secret, and child processes do not inherit a file."
+
+  - id: ats045-010-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Stop an unneeded ServiceAccount token"
+    source_readings:
+      - sections/section-010/module-01/course-03-credentials-and-service-account-tokens.md
+    prompt: "A pod never calls the Kubernetes API. What is the correct way to stop it from receiving a ServiceAccount token?"
+    options:
+      - id: a
+        text: "Set `automountServiceAccountToken: false` in the pod specification or on the ServiceAccount."
+        explanation: "Correct. The kubelet then does not project the token into the pod."
+      - id: b
+        text: "Delete the ServiceAccount."
+        explanation: "The pod would then fail to be created, because its ServiceAccount must exist."
+      - id: c
+        text: "Set `readOnlyRootFilesystem: true`."
+        explanation: "This protects the container file system, but the token is a projected volume."
+      - id: d
+        text: "Remove the RoleBinding only."
+        explanation: "The token would still be mounted and authenticate the pod, with fewer rights."
+    correct_option: a
+    explanation: "Correct. The kubelet then does not project the token into the pod."
+
+  - id: ats045-010-q10
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Explain complete credential rotation"
+    source_readings:
+      - sections/section-010/module-01/course-03-credentials-and-service-account-tokens.md
+    prompt: "A team updates the value of a database password in a Secret but does not change the database. What is the result?"
+    options:
+      - id: a
+        text: "The old password is revoked automatically."
+        explanation: "Kubernetes does not know about the database account."
+      - id: b
+        text: "The Deployment restarts and rotates the password."
+        explanation: "A Secret change does not restart pods unless a controller is set up to do so, and it cannot change the issuer."
+      - id: c
+        text: "The password is now encrypted."
+        explanation: "Changing a value does not encrypt it."
+      - id: d
+        text: "The old password still works at the database, so the leaked credential stays valid."
+        explanation: "Correct. Rotation is complete only when the issuer revokes the old credential."
+    correct_option: d
+    explanation: "Correct. Rotation is complete only when the issuer revokes the old credential."

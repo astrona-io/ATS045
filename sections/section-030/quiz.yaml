@@ -1,0 +1,242 @@
+# Knowledge check for section 030. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats045-030
+course_id: ATS045
+exam_code: KCSA
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-030
+  title: "Observability"
+questions:
+  - id: ats045-030-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Choose an audit level"
+    source_readings:
+      - sections/section-030/module-01/course-01-audit-policy-rules-levels-and-stages.md
+    prompt: "Which audit level records the request and response bodies?"
+    options:
+      - id: a
+        text: "`RequestResponse`"
+        explanation: "Correct. It adds both the request body and the response body to the metadata."
+      - id: b
+        text: "`Metadata`"
+        explanation: "Metadata records caller, verb, target and status, without bodies."
+      - id: c
+        text: "`Request`"
+        explanation: "Request adds only the request body."
+      - id: d
+        text: "`None`"
+        explanation: "None writes no event."
+    correct_option: a
+    explanation: "Correct. It adds both the request body and the response body to the metadata."
+
+  - id: ats045-030-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain what audit logging does"
+    source_readings:
+      - sections/section-030/module-01/course-01-audit-policy-rules-levels-and-stages.md
+    prompt: "What does enabling audit logging change about a request?"
+    options:
+      - id: a
+        text: "It blocks requests from unknown callers."
+        explanation: "Blocking is done by authentication and authorization."
+      - id: b
+        text: "It encrypts the request body."
+        explanation: "Audit does not encrypt anything."
+      - id: c
+        text: "It slows the request until a reviewer approves it."
+        explanation: "There is no approval step in audit."
+      - id: d
+        text: "It records the request and does not change whether it is allowed."
+        explanation: "Correct. Audit records activity. Authentication and authorization decide access."
+    correct_option: d
+    explanation: "Correct. Audit records activity. Authentication and authorization decide access."
+
+  - id: ats045-030-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Apply first-match rule order"
+    source_readings:
+      - sections/section-030/module-01/course-01-audit-policy-rules-levels-and-stages.md
+    prompt: "A policy has a rule that sets `None` for all `get`, `list` and `watch` requests above a rule that sets `Metadata` for Secrets. A caller reads a Secret. What is recorded?"
+    options:
+      - id: a
+        text: "An event at level `Metadata`."
+        explanation: "That rule is never reached for a read, because an earlier rule already matched."
+      - id: b
+        text: "An event at level `RequestResponse`."
+        explanation: "No rule gives this level."
+      - id: c
+        text: "Nothing, because the first matching rule gives `None`."
+        explanation: "Correct. The first matching rule applies, so the read rule hides Secret reads."
+      - id: d
+        text: "Two events, one per rule."
+        explanation: "Rules are never combined."
+    correct_option: c
+    explanation: "Correct. The first matching rule applies, so the read rule hides Secret reads."
+
+  - id: ats045-030-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Choose the safe level for Secrets"
+    source_readings:
+      - sections/section-030/module-01/course-01-audit-policy-rules-levels-and-stages.md
+    prompt: "Why should a policy record Secrets at `Metadata` and not at `RequestResponse`?"
+    options:
+      - id: a
+        text: "`RequestResponse` is not valid for Secrets."
+        explanation: "The level is valid but unsafe."
+      - id: b
+        text: "The response body of a Secret read contains the Secret data, which would then be stored in the log."
+        explanation: "Correct. Anyone who can read the log would read the Secret."
+      - id: c
+        text: "`Metadata` records more detail."
+        explanation: "Metadata records less detail."
+      - id: d
+        text: "Secrets have no verbs."
+        explanation: "Secrets support the normal verbs."
+    correct_option: b
+    explanation: "Correct. Anyone who can read the log would read the Secret."
+
+  - id: ats045-030-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Group stage events"
+    source_readings:
+      - sections/section-030/module-01/course-01-audit-policy-rules-levels-and-stages.md
+    prompt: "Several events in the log have the same `auditID`. What does that show?"
+    options:
+      - id: a
+        text: "They are stage events of the same request."
+        explanation: "Correct. Stage events of one request share an auditID."
+      - id: b
+        text: "They came from the same user over time."
+        explanation: "The auditID identifies a request, not a user."
+      - id: c
+        text: "The request was repeated several times."
+        explanation: "A repeated request gets a new auditID each time."
+      - id: d
+        text: "The log was copied."
+        explanation: "Copying a file does not change an auditID."
+    correct_option: a
+    explanation: "Correct. Stage events of one request share an auditID."
+
+  - id: ats045-030-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Name what makes the policy take effect"
+    source_readings:
+      - sections/section-030/module-01/course-02-enable-audit-logging-and-read-events.md
+    prompt: "A policy file exists on the control plane node, but no events are written. What is the most likely missing step?"
+    options:
+      - id: a
+        text: "A `kubectl apply` of the policy file."
+        explanation: "The policy is not an API resource."
+      - id: b
+        text: "A new ServiceAccount for the auditors."
+        explanation: "Audit does not depend on a ServiceAccount."
+      - id: c
+        text: "A restart of the CoreDNS pods."
+        explanation: "DNS is not involved in audit."
+      - id: d
+        text: "The API server was not started with `--audit-policy-file` and `--audit-log-path`, with the matching volumes."
+        explanation: "Correct. The API server reads the policy only through its flags, at startup, from paths inside its container."
+    correct_option: d
+    explanation: "Correct. The API server reads the policy only through its flags, at startup, from paths inside its container."
+
+  - id: ats045-030-q07
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Recover from a failed API server restart"
+    source_readings:
+      - sections/section-030/module-01/course-02-enable-audit-logging-and-read-events.md
+    prompt: "After editing the kube-apiserver manifest, `kubectl` no longer connects. What is the right recovery?"
+    options:
+      - id: a
+        text: "Run `kubectl delete pod` on the API server pod."
+        explanation: "The API server is down, so `kubectl` cannot send the request."
+      - id: b
+        text: "Wait for the policy to reload."
+        explanation: "The policy is read only at startup."
+      - id: c
+        text: "Restore the backup manifest on the node, outside the cluster API, and wait for the kubelet to restart the pod."
+        explanation: "Correct. The kubelet watches the manifest directory, so restoring the file fixes the pod without the API."
+      - id: d
+        text: "Reinstall `kubectl`."
+        explanation: "The client is not the problem."
+    correct_option: c
+    explanation: "Correct. The kubelet watches the manifest directory, so restoring the file fixes the pod without the API."
+
+  - id: ats045-030-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain what retention flags do"
+    source_readings:
+      - sections/section-030/module-01/course-02-enable-audit-logging-and-read-events.md
+    prompt: "A cluster sets `--audit-log-maxage=7` and `--audit-log-maxbackup=3`. What is the effect?"
+    options:
+      - id: a
+        text: "The log is encrypted for 7 days."
+        explanation: "The flags do not encrypt."
+      - id: b
+        text: "Events older than 7 days and files beyond three rotated copies are removed."
+        explanation: "Correct. The flags limit age and number, so older evidence no longer exists."
+      - id: c
+        text: "Only three users can read the log."
+        explanation: "The flags do not control access."
+      - id: d
+        text: "The API server keeps three copies of every event."
+        explanation: "The flags control rotated files, not copies of events."
+    correct_option: b
+    explanation: "Correct. The flags limit age and number, so older evidence no longer exists."
+
+  - id: ats045-030-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Distinguish evidence sources"
+    source_readings:
+      - sections/section-030/module-01/course-03-collection-retention-and-evidence-limits.md
+    prompt: "Audit events show that a service account created a Pod. What do they not prove?"
+    options:
+      - id: a
+        text: "That the Pod later ran a specific command."
+        explanation: "Correct. The audit log records the API request. Process activity inside a container needs a runtime source."
+      - id: b
+        text: "Which credential made the request."
+        explanation: "They show this."
+      - id: c
+        text: "When the request was made."
+        explanation: "They show this."
+      - id: d
+        text: "Whether the request succeeded."
+        explanation: "They show the response status."
+    correct_option: a
+    explanation: "Correct. The audit log records the API request. Process activity inside a container needs a runtime source."
+
+  - id: ats045-030-q10
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Explain cardinality"
+    source_readings:
+      - sections/section-030/module-01/course-03-collection-retention-and-evidence-limits.md
+    prompt: "A metric gets a label that holds a unique request identifier. What is the main risk?"
+    options:
+      - id: a
+        text: "The metric stops counting."
+        explanation: "Counting continues."
+      - id: b
+        text: "The label is encrypted."
+        explanation: "Labels are stored as text."
+      - id: c
+        text: "The metric moves to the audit log."
+        explanation: "Metrics and audit logs are separate stores."
+      - id: d
+        text: "Each request creates a new series, which can overwhelm the metrics backend."
+        explanation: "Correct. Cardinality is the number of distinct label combinations, and an unbounded label grows without limit."
+    correct_option: d
+    explanation: "Correct. Cardinality is the number of distinct label combinations, and an unbounded label grows without limit."

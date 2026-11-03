@@ -203,20 +203,26 @@ The course covers **Platform Security**, worth **16%** of
 **Kubernetes and Cloud Native Security Associate (KCSA)**. It is part of **ATP009**.
 The official objectives are listed in `astrona.yaml` and mapped in `CURRICULUM.md`.
 
-### Reading-only scope
+### Scope: readings, playgrounds, labs and quizzes
 
-The maintainer approved the lesson plan, asked for deeper teaching, and explicitly
-requested **no labs or playgrounds**. That instruction overrides shared examples
-about hands-on environments, graded labs and playground markers. Do not create
-runtime configurations, executable exercises or playground lifecycle markers.
-The course must be usable without a cluster or installed command-line tools.
+The maintainer first approved a reading-only course, then explicitly approved
+overriding that rule. Labs, playgrounds, capstones and `quiz.yaml` files are now
+in scope. Each section has one module with a playground, a graded module lab
+(`difficulty: intermediate`), a section capstone lab (`difficulty: advanced`)
+and a `quiz.yaml` registered as `type: quiz` with `pass_score: 70`.
+`sections/final-domain-quiz.yaml` closes the domain. The earlier question banks
+under `assessments/` and `sections/*/questions.yaml` are kept as practice data.
+
+All labs and playgrounds are UNTESTED: they were built from documentation and
+checked only with `astrona validate`, `bash -n` and YAML parsing. Do not claim
+runtime verification until they are booted and graded.
 
 ### Teaching structure and depth
 
 Every section begins with its own introduction and measurable learning outcomes.
 Every module contains a landing page, developed teaching lessons and a final
 `# Summary` page. Put the summary after all its lessons and before the next
-module. This reading-only summary has no playground destruction marker.
+module. The summary ends with `<!-- astrona:playground:destroy -->`.
 
 Explain mechanisms, responsible components, realistic examples and the limits
 of each claim. Include worked reasoning and relevant failure cases. Avoid thin
@@ -248,4 +254,4 @@ The ATP registration remains draft until publication is approved.
 Primary author sources are recorded in `SOURCES.md`. The objective list was
 verified on 2026-10-11. Detailed reading expansions were written on 2026-10-11.
 Validate manifest paths, summary ordering, curriculum coverage and question
-contracts. Do not claim runtime verification for a reading-only course.
+contracts. Do not claim runtime verification: the labs and playgrounds are untested.

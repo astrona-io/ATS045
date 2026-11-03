@@ -1,0 +1,69 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Harden A Build Runner Workload (LAB). Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-045-capstone-010
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - mccutchen/go-httpbin:2.25.0
+      - curlimages/curl:8.22.0
+
+bootstrap:
+  init:
+    - name: seed-cluster
+      description: Create forge with a build-runner that has broad access and an environment token
+      type: file
+      source: bootstrap/01-seed-cluster.sh
+
+testing:
+  init:
+    - name: apply-solution
+      description: Apply the reference solution
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: dedicated-identity
+      description: build-runner uses its own ServiceAccount without a token
+      type: file
+      source: validation/validate-dedicated-identity.sh
+      hint: Set serviceAccountName build-runner and automountServiceAccountToken false in the pod template.
+    - name: default-account-no-admin
+      description: The default ServiceAccount cannot read Secrets
+      type: file
+      source: validation/validate-default-account-no-admin.sh
+      hint: Delete the RoleBinding default-admin in forge.
+    - name: image-pinned
+      description: The image is referenced by digest
+      type: file
+      source: validation/validate-image-pinned.sh
+      hint: Use mccutchen/go-httpbin@sha256:digest, with the digest from the pod status.
+    - name: token-secret-as-file
+      description: The registry token is a mounted Secret, not an environment variable
+      type: file
+      source: validation/validate-token-secret-as-file.sh
+      hint: Remove REGISTRY_TOKEN from env and mount Secret registry-token read-only.
+    - name: container-hardened
+      description: The container has a hardened security context
+      type: file
+      source: validation/validate-container-hardened.sh
+      hint: Set readOnlyRootFilesystem, allowPrivilegeEscalation false, drop ALL and runAsNonRoot with a numeric user.
+    - name: build-runner-running
+      description: build-runner is available and answers requests
+      type: file
+      source: validation/validate-build-runner-running.sh
+      hint: Check the pod. go-httpbin runs as user 65532 and needs no writable path.
+
+teardown:
+  keepCluster: false
