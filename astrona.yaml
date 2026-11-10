@@ -197,7 +197,7 @@ modules:
     difficulty: intermediate
     estimated_duration: 25m
     topic: observability
-    task_kind: configure
+    task_kind: build
     tags: [audit, kube-apiserver, audit-policy, jq]
     learning_goals:
       - "Enable audit logging on the API server"
@@ -218,7 +218,7 @@ modules:
     difficulty: advanced
     estimated_duration: 35m
     topic: observability
-    task_kind: configure
+    task_kind: build
     tags: [audit, rbac, retention, jq]
     learning_goals:
       - "Enable audit logging with retention flags"
@@ -260,7 +260,7 @@ modules:
     difficulty: intermediate
     estimated_duration: 25m
     topic: service-mesh
-    task_kind: configure
+    task_kind: build
     tags: [istio, mtls, peerauthentication, spiffe]
     learning_goals:
       - "Require mutual TLS for a namespace"
@@ -281,7 +281,7 @@ modules:
     difficulty: advanced
     estimated_duration: 35m
     topic: service-mesh
-    task_kind: configure
+    task_kind: build
     tags: [istio, mtls, authorizationpolicy, spiffe]
     learning_goals:
       - "Require mutual TLS and open one port"
@@ -323,7 +323,7 @@ modules:
     difficulty: intermediate
     estimated_duration: 25m
     topic: pki
-    task_kind: configure
+    task_kind: build
     tags: [pki, certificates, csr, rbac]
     learning_goals:
       - "Read the cluster CA fingerprint and certificate expiry from the node"
@@ -344,7 +344,7 @@ modules:
     difficulty: advanced
     estimated_duration: 35m
     topic: pki
-    task_kind: configure
+    task_kind: troubleshooting
     tags: [pki, certificates, csr, rbac]
     learning_goals:
       - "Remove all access of a leaked certificate"
@@ -386,7 +386,7 @@ modules:
     difficulty: intermediate
     estimated_duration: 25m
     topic: networking
-    task_kind: configure
+    task_kind: build
     tags: [networkpolicy, default-deny, egress, dns]
     learning_goals:
       - "Isolate a namespace with a default-deny ingress policy"
@@ -407,7 +407,7 @@ modules:
     difficulty: advanced
     estimated_duration: 40m
     topic: networking
-    task_kind: configure
+    task_kind: build
     tags: [networkpolicy, default-deny, egress, metrics]
     learning_goals:
       - "Deny all traffic in both directions"
@@ -450,7 +450,7 @@ modules:
     difficulty: intermediate
     estimated_duration: 25m
     topic: admission
-    task_kind: configure
+    task_kind: build
     tags: [admission, pod-security, validating-admission-policy, cel]
     learning_goals:
       - "Enforce the restricted Pod Security level on one namespace"
@@ -473,7 +473,7 @@ modules:
     difficulty: advanced
     estimated_duration: 35m
     topic: admission
-    task_kind: configure
+    task_kind: build
     tags: [admission, pod-security, validating-admission-policy, binding]
     learning_goals:
       - "Find why a Pod Security level and a policy do not protect a namespace"
